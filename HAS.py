@@ -2,7 +2,7 @@ import string as st
 import hashlib
 class HASHash:
     """
-        Hashing . Advanced . Strong
+        Hashing . Algorithem. Simple
         ---------------------------
     """
     def __init__(self, value):
