@@ -25,3 +25,5 @@ _Use the hexdigest function to get the value in hex_
 *THIS HASH FUNCTION IS PROBABLY NOT THE SAFEST!*
 
 I made it because I was bored, so please use something like Argon2 or Sha512 for real use cases.
+
+PS: I know my code looks bad
