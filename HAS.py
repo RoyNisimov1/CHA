@@ -65,6 +65,6 @@ if __name__ == '__main__':
         m = input("Message\n")
         h = HASHash.HAS(m).hexdigest()
         # You can put the length that you want in hexdigest, for 512 put 128
-        print(f"Mine:\n{h}")
+        print(f"My hash:\n{h}")
         h2 = hashlib.sha512(m.encode()).hexdigest()
         print(f"Sha512:\n{h2}")
