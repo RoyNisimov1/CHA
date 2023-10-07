@@ -39,7 +39,7 @@ class HASHash:
                 shaffle_list.append(first)
         bm = [format(ord(c), 'b') for c in om]
         amount_to_shift = len(padding_list) - len(bm)
-        if amount_to_shift <= 0: amount_to_shift = 0
+        if amount_to_shift <= 0: amount_to_shift *= -1
         shift_must = ord(om[0]) if len(om) > 0 else 153
         amount_to_shift += shift_must
         for i, b in enumerate(padding_list):
@@ -63,8 +63,8 @@ class HASHash:
 if __name__ == '__main__':
     while True:
         m = input("Message\n")
-        h = HASHash.HAS(m).hexdigest()
-        # You can put the length that you want in hexdigest, for 512 put 128
+        h = HASHash.HAS(m).hexdigest(128)
+        # You can put the length that you want in hexdigest(n_bits), for 512 put 128
         print(f"My hash:\n{h}")
         h2 = hashlib.sha512(m.encode()).hexdigest()
         print(f"Sha512:\n{h2}")
