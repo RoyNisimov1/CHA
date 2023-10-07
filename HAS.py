@@ -48,6 +48,9 @@ class HASHash:
         for i in range(0, amount_to_shift):
             first = key.pop(0)
             key.append(first)
+        if key == bm:
+            first = key.pop(0)
+            key.append(first)
         bm = list(int(c, 2) for c in bm)
         key = list(int(c, 2) for c in key)
         xored = []
@@ -64,7 +67,7 @@ if __name__ == '__main__':
     while True:
         m = input("Message\n")
         h = HASHash.HAS(m).hexdigest(128)
-        # You can put the length that you want in hexdigest(n_bits), for 512 put 128
+        # You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4
         print(f"My hash:\n{h}")
         h2 = hashlib.sha512(m.encode()).hexdigest()
         print(f"Sha512:\n{h2}")
