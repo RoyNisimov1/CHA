@@ -38,7 +38,7 @@ Using HASS:
 ## Step One: Encipher
 The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** 2 each time. 
 
-    shaffle_list = ['p', 'P', '{', 'D', '=', 'F', 'l', 'f', '@', 'b', 'k', '5', 'M', 'H', ':', 'U', '[', 'A', 'u', '`', 'w', "'", '1', 'S', '~', '^', '"', 'L', '3', '#', 'C', '!', '\\', 'a', 'y', 'Q', 'X', 'v', '4', '2', 'V', 'g', 'h', 'n', 'R', 'B', 'I', '|', 'O', 'W', 'd', ' ', 'T', 'G', '/', 'o', '&', ']', 'Y', 'E', '<', 'z', '?', '$', '9', 't', '}', '7', 'm', ';', '.', 's', '-', '0', 'r', ')', '8', '+', 'Z', ',', '%', 'e', 'q', '6', 'N', '>', 'x', 'c', '*', 'K', 'J', 'i', '(', 'j', '_']
+        shaffle_list = ['p', 'P', '{', 'D', '=', 'F', 'l', 'f', '@', 'b', 'k', '5', 'M', 'H', ':', 'U', '[', 'A', 'u', '`', 'w', "'", '1', 'S', '~', '^', '"', 'L', '3', '#', 'C', '!', '\\', 'a', 'y', 'Q', 'X', 'v', '4', '2', 'V', 'g', 'h', 'n', 'R', 'B', 'I', '|', 'O', 'W', 'd', ' ', 'T', 'G', '/', 'o', '&', ']', 'Y', 'E', '<', 'z', '?', '$', '9', 't', '}', '7', 'm', ';', '.', 's', '-', '0', 'r', ')', '8', '+', 'Z', ',', '%', 'e', 'q', '6', 'N', '>', 'x', 'c', '*', 'K', 'J', 'i', '(', 'j', '_']
         for c in message:
             try:
                 index = en.index(c)
@@ -52,7 +52,7 @@ The function enciphers each letter with a letter in the shuffle list if it exist
 ## Step Two: Padding
 This step adds padding to the cipher text, we also have an amount to shift at the end of it
 
-    bm = [format(ord(c), 'b') for c in om]
+        bm = [format(ord(c), 'b') for c in om]
         amount_to_shift = len(padding_list) - len(bm)
         if amount_to_shift <= 0: amount_to_shift *= -1
         shift_must = ord(om[0]) if len(om) > 0 else 153
@@ -63,7 +63,7 @@ This step adds padding to the cipher text, we also have an amount to shift at th
 ## Step Three: Keying
 We make a copy of the text list (bm in here) and shift everything by the amount to shift
 
-    key = bm.copy()
+        key = bm.copy()
         for i in range(0, amount_to_shift):
             first = key.pop(0)
             key.append(first)
@@ -74,7 +74,7 @@ We make a copy of the text list (bm in here) and shift everything by the amount 
 ## Step Four: XORing
 In this step we XOR the ciphertext with our key
 
-    bm = list(int(c, 2) for c in bm)
+        bm = list(int(c, 2) for c in bm)
         key = list(int(c, 2) for c in key)
         xored = []
         for i in range(len(bm)):
@@ -84,7 +84,7 @@ In this step we XOR the ciphertext with our key
 ## Step Five: Final
 We join this large list, turn that into an int, and then we return a HASHash object of it
 
-    s = ''
+        s = ''
         for string in s_xored:
             s += string.strip("-")
         last_int = int(s)
@@ -99,7 +99,7 @@ Foreach letter we:
 2. Shift the shuffle list by the letter's ord
 
 
-    chars = st.ascii_letters + st.digits + st.punctuation + ' '
+        chars = st.ascii_letters + st.digits + st.punctuation + ' '
         shuffled = ['9', 'n', '5', '<', '0', 'W', '_', '\\', '2', 'e', '(', 'u', "'", 'f', '~', 'y', 'v', 'U', 'O', 'N', 'm', 'F', '[', '+', 'i', 'Y', 'T', ':', 'B', 'Q', 'R', 'I', 'z', '?', 'L', 'j', '1', '*', ' ', 'J', 'q', 'r', 'X', '%', 'Z', '{', '7', 'h', 's', ';', '-', '!', 'b', 'M', 'k', 'c', '|', 'd', '&', 'V', 'l', 'P', '"', 'C', '@', 'H', 'a', '4', 'w', '=', 'x', '.', ',', '8', '6', 'G', 'g', 'A', '`', 't', ')', '#', '^', '/', '3', 'E', '$', '}', 'o', 'p', '>', 'D', 'S', 'K', ']']
         return_str = ''
         for ch in message:
@@ -113,7 +113,7 @@ Foreach letter we:
 ## Step Two: turning into int
 We make the ciphertext list be a string, and then turning into int
 
-    s = ''
+        s = ''
         for c in return_str:
             s += str(ord(c)**ord(c))
         if len(s) > 0:
