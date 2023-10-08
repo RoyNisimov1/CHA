@@ -1,8 +1,8 @@
 # How to use
 
-I already configured the main function, just run it.
+Both functions will return a hash object, call hexdigest
 
-# How it works
+# How HAS works
 ## Step one: Encipher
 The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** 2 each time. 
         
@@ -17,6 +17,19 @@ In this step we XOR the ciphertext with our key
 
 ## Step five: Final
 We join this large list, turn that into an int, and then we return a HASHash object of it
+
+# How HASS works
+## Step one: shuffling
+Foreach letter we:
+    
+1. Switch the letter for the one in the shuffle list
+2. Shift the shuffle list by the letter's ord
+## Step two: turning into int
+We make the ciphertext list be a string, and then turning into int
+
+### _*Note*_
+This function will not return a fixed length, and will only work on english letters for now
+
 
 _Notes_:
 
