@@ -86,17 +86,12 @@ class HASHash:
 if __name__ == '__main__':
     while True:
         m = input("Message\n")
-        mode = input('Mode:\n HAS\n HASS\n').lower()
-        if mode == 'hass':
-            h = HASHash.HASS(m)
-
-        else:
-            h = HASHash.HAS(m)
-            # You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4
         n_bits = input('You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4:\n')
         if n_bits.isspace() or n_bits == '': n_bits = 128
         n_bits = int(n_bits)
-        h = h.hexdigest(n_bits)
-        print(f"My hash:\n{h}")
+        h = HASHash.HAS(m).hexdigest(n_bits)
+        h1 = HASHash.HASS(m).hexdigest(n_bits)
+        print(f"HAS:\n{h}")
+        print(f"HASS:\n{h1}")
         h2 = hashlib.sha512(m.encode()).hexdigest()
         print(f"Sha512:\n{h2}")
