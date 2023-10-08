@@ -35,7 +35,7 @@ Using HASS:
 
 
 # How HAS works
-## Step one: Encipher
+## Step One: Encipher
 The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** 2 each time. 
 
     shaffle_list = ['p', 'P', '{', 'D', '=', 'F', 'l', 'f', '@', 'b', 'k', '5', 'M', 'H', ':', 'U', '[', 'A', 'u', '`', 'w', "'", '1', 'S', '~', '^', '"', 'L', '3', '#', 'C', '!', '\\', 'a', 'y', 'Q', 'X', 'v', '4', '2', 'V', 'g', 'h', 'n', 'R', 'B', 'I', '|', 'O', 'W', 'd', ' ', 'T', 'G', '/', 'o', '&', ']', 'Y', 'E', '<', 'z', '?', '$', '9', 't', '}', '7', 'm', ';', '.', 's', '-', '0', 'r', ')', '8', '+', 'Z', ',', '%', 'e', 'q', '6', 'N', '>', 'x', 'c', '*', 'K', 'J', 'i', '(', 'j', '_']
@@ -49,7 +49,7 @@ The function enciphers each letter with a letter in the shuffle list if it exist
                 first = shaffle_list.pop(0)
                 shaffle_list.append(first)
 
-## Step two: Padding
+## Step Two: Padding
 This step adds padding to the cipher text, we also have an amount to shift at the end of it
 
     bm = [format(ord(c), 'b') for c in om]
@@ -71,7 +71,7 @@ We make a copy of the text list (bm in here) and shift everything by the amount 
             first = key.pop(0)
             key.append(first)
 
-## Step four: XORing
+## Step Four: XORing
 In this step we XOR the ciphertext with our key
 
     bm = list(int(c, 2) for c in bm)
@@ -81,7 +81,7 @@ In this step we XOR the ciphertext with our key
             xored.append(bm[i] ^ key[i])
         s_xored = [str(n) for n in xored]
 
-## Step five: Final
+## Step Five: Final
 We join this large list, turn that into an int, and then we return a HASHash object of it
 
     s = ''
@@ -92,7 +92,7 @@ We join this large list, turn that into an int, and then we return a HASHash obj
 
 
 # How HASS works
-## Step one: shuffling
+## Step One: shuffling
 Foreach letter we:
     
 1. Switch the letter for the one in the shuffle list
@@ -110,7 +110,7 @@ Foreach letter we:
                 first = shuffled.pop(0)
                 shuffled.append(first)
 
-## Step two: turning into int
+## Step Two: turning into int
 We make the ciphertext list be a string, and then turning into int
 
     s = ''
