@@ -17,6 +17,26 @@ class HASHash:
     def digest(self):
         return self.value
 
+    @staticmethod
+    def HASS(message):
+        chars = st.ascii_letters + st.digits + st.punctuation + ' '
+        shuffled = ['9', 'n', '5', '<', '0', 'W', '_', '\\', '2', 'e', '(', 'u', "'", 'f', '~', 'y', 'v', 'U', 'O', 'N', 'm', 'F', '[', '+', 'i', 'Y', 'T', ':', 'B', 'Q', 'R', 'I', 'z', '?', 'L', 'j', '1', '*', ' ', 'J', 'q', 'r', 'X', '%', 'Z', '{', '7', 'h', 's', ';', '-', '!', 'b', 'M', 'k', 'c', '|', 'd', '&', 'V', 'l', 'P', '"', 'C', '@', 'H', 'a', '4', 'w', '=', 'x', '.', ',', '8', '6', 'G', 'g', 'A', '`', 't', ')', '#', '^', '/', '3', 'E', '$', '}', 'o', 'p', '>', 'D', 'S', 'K', ']']
+        return_str = ''
+        for ch in message:
+            if ch not in shuffled or ch not in chars: continue
+            index = chars.index(ch)
+            return_str += shuffled[index]
+            for i in range(0, ord(ch)):
+                first = shuffled.pop(0)
+                shuffled.append(first)
+        s = ''
+        for c in return_str:
+            s += str(ord(c)**ord(c))
+        if len(s) > 0:
+            last = int(s)
+        else:
+            last = 1
+        return HASHash(last)
 
     @staticmethod
     def HAS(message: str):
@@ -66,8 +86,17 @@ class HASHash:
 if __name__ == '__main__':
     while True:
         m = input("Message\n")
-        h = HASHash.HAS(m).hexdigest(128)
-        # You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4
+        mode = input('Mode:\n HAS\n HASS\n').lower()
+        if mode == 'hass':
+            h = HASHash.HASS(m)
+
+        else:
+            h = HASHash.HAS(m)
+            # You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4
+        n_bits = input('You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4:\n')
+        if n_bits.isspace() or n_bits == '': n_bits = 128
+        n_bits = int(n_bits)
+        h = h.hexdigest(n_bits)
         print(f"My hash:\n{h}")
         h2 = hashlib.sha512(m.encode()).hexdigest()
         print(f"Sha512:\n{h2}")
