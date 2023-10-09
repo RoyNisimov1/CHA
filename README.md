@@ -1,3 +1,7 @@
+# Hashing use cases
+
+Storing passwords with salt
+
 # How to use
 
 Both functions will return a hash object, call hexdigest
