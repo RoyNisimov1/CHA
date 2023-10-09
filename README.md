@@ -134,4 +134,6 @@ _Use the hexdigest function to get the value in hex_
 
 I made it because I was bored, so please use something like Argon2 or Sha512 for real use cases.
 
+Also, there might already be a similar hashing function that I don't know of
+
 PS: I know my code looks bad

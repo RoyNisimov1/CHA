@@ -14,11 +14,20 @@ class HASHash:
         return hex(self.value).strip("0x")[0:b]
 
 
-    def digest(self):
+    def digest(self, n_bits=128):
+        r = int(self.value).to_bytes(int(self.value).bit_length(), 'little').rstrip(b'\x00')[0:n_bits//2]
+        return r
+
+    def num(self):
         return self.value
 
     @staticmethod
-    def HASS(message):
+    def HASS(message:str, size_limit_of_0=155):
+        """
+        :param message: the message
+        :param size_limit_of_0: how many 0 are allowed,
+        :return: HASHash
+        """
         chars = st.ascii_letters + st.digits + st.punctuation + ' '
         shuffled = ['9', 'n', '5', '<', '0', 'W', '_', '\\', '2', 'e', '(', 'u', "'", 'f', '~', 'y', 'v', 'U', 'O', 'N', 'm', 'F', '[', '+', 'i', 'Y', 'T', ':', 'B', 'Q', 'R', 'I', 'z', '?', 'L', 'j', '1', '*', ' ', 'J', 'q', 'r', 'X', '%', 'Z', '{', '7', 'h', 's', ';', '-', '!', 'b', 'M', 'k', 'c', '|', 'd', '&', 'V', 'l', 'P', '"', 'C', '@', 'H', 'a', '4', 'w', '=', 'x', '.', ',', '8', '6', 'G', 'g', 'A', '`', 't', ')', '#', '^', '/', '3', 'E', '$', '}', 'o', 'p', '>', 'D', 'S', 'K', ']']
         return_str = ''
@@ -32,6 +41,7 @@ class HASHash:
         s = ''
         for c in return_str:
             s += str(ord(c)**ord(c))
+        s = s[0:size_limit_of_0]
         if len(s) > 0:
             last = int(s)
         else:
@@ -39,9 +49,11 @@ class HASHash:
         return HASHash(last)
 
     @staticmethod
-    def HAS(message: str):
+    def HAS(message: str, size_limit_of_0=155):
         """
-            The HAS function takes a string and returns a HASHash object.
+        :param message: the message
+        :param size_limit_of_0: how many 0 are allowed,
+        :return: HASHash
         """
         en = st.ascii_letters + st.digits + st.punctuation
         padding = '01110011 00110011 11000110 10001101 01100111 00010001 00001110 11100100 11111100 11010111 10010111 00001111 01100111 10010100 11100101 00010100 00010110 11101011 00111110 01110000 00010000 00010100 11111110 11000101 11000011 00000100 01011011 01100010 01101000 10001001 00110000 11100000 00000100 00000010 01001111 00110011 11110101 01010101 11011111 00011010 01010101 01100110 10110110 11110110 00000000 11011111 11101100 01011100 11111110 11111011 11011100 00010001 00100100 00101100 11101100 11000111 10110111 11000100 10001010 11101111 00010010 00101011 11000111'
@@ -80,6 +92,7 @@ class HASHash:
         s = ''
         for string in s_xored:
             s += string.strip("-")
+        s = s[0:size_limit_of_0]
         last_int = int(s)
         return HASHash(last_int)
 
@@ -89,9 +102,18 @@ if __name__ == '__main__':
         n_bits = input('You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4:\n')
         if n_bits.isspace() or n_bits == '': n_bits = 128
         n_bits = int(n_bits)
-        h = HASHash.HAS(m).hexdigest(n_bits)
-        h1 = HASHash.HASS(m).hexdigest(n_bits)
-        print(f"HAS:\n{h}")
-        print(f"HASS:\n{h1}")
-        h2 = hashlib.sha512(m.encode()).hexdigest()
-        print(f"Sha512:\n{h2}")
+        h = HASHash.HAS(m)
+        h1 = HASHash.HASS(m)
+        h2 = hashlib.sha512(m.encode())
+        print('Hex:')
+        print(f"HAS Hex:\n{h.hexdigest(n_bits)}")
+        print(f"HASS Hex:\n{h1.hexdigest(n_bits)}")
+        print(f"Sha512 Hex:\n{h2.hexdigest()}")
+        print('\nDigest:')
+        print(f"HAS Digest:\n{h.digest(n_bits)}")
+        print(f"HASS Digest:\n{h1.digest(n_bits)}")
+        print(f"Sha512 Digest:\n{h2.digest()}")
+        print('\nNums:')
+        print(f"HAS Num:\n{h.num()}")
+        print(f"HASS Num:\n{h1.num()}")
+        print(f"Sha512 Num:\n{int(h2.hexdigest(),16)}")
