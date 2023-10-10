@@ -101,7 +101,6 @@ class HASHash:
 if __name__ == '__main__':
     while True:
         m = input("Message\n")
-        print(hashlib.sha512(m.encode()).hexdigest())
         n_bits = input('You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4:\n')
         if n_bits.isspace() or n_bits == '': n_bits = 128
         n_bits = int(n_bits)
