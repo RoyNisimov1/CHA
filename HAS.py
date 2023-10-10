@@ -41,6 +41,8 @@ class HASHash:
         s = ''
         for c in return_str:
             s += str(ord(c)**ord(c))
+            if len(s) >= size_limit_of_0:
+                break
         s = s[0:size_limit_of_0]
         if len(s) > 0:
             last = int(s)
