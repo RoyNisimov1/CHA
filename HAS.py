@@ -63,12 +63,12 @@ class HASHash:
         om = []
         shaffle_list = ['p', 'P', '{', 'D', '=', 'F', 'l', 'f', '@', 'b', 'k', '5', 'M', 'H', ':', 'U', '[', 'A', 'u', '`', 'w', "'", '1', 'S', '~', '^', '"', 'L', '3', '#', 'C', '!', '\\', 'a', 'y', 'Q', 'X', 'v', '4', '2', 'V', 'g', 'h', 'n', 'R', 'B', 'I', '|', 'O', 'W', 'd', ' ', 'T', 'G', '/', 'o', '&', ']', 'Y', 'E', '<', 'z', '?', '$', '9', 't', '}', '7', 'm', ';', '.', 's', '-', '0', 'r', ')', '8', '+', 'Z', ',', '%', 'e', 'q', '6', 'N', '>', 'x', 'c', '*', 'K', 'J', 'i', '(', 'j', '_']
         for c in message:
-            try:
+            if c in en:
                 index = en.index(c)
                 om.append(shaffle_list[index])
-            except ValueError:
+            else:
                 om.append(c)
-            for i in range(0, ord(c)**2):
+            for i in range(0, ord(c)**2 % len(padding_list)):
                 first = shaffle_list.pop(0)
                 shaffle_list.append(first)
         bm = [format(ord(c), 'b') for c in om]
@@ -101,6 +101,7 @@ class HASHash:
 if __name__ == '__main__':
     while True:
         m = input("Message\n")
+        print(hashlib.sha512(m.encode()).hexdigest())
         n_bits = input('You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4:\n')
         if n_bits.isspace() or n_bits == '': n_bits = 128
         n_bits = int(n_bits)
