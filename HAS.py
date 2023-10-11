@@ -68,7 +68,7 @@ class HASHash:
                 om.append(shaffle_list[index])
             else:
                 om.append(c)
-            for i in range(0, ord(c)**2 % len(padding_list)):
+            for i in range(0, pow(ord(c), ord(c), len(shaffle_list))):
                 first = shaffle_list.pop(0)
                 shaffle_list.append(first)
         bm = [format(ord(c), 'b') for c in om]
