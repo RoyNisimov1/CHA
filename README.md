@@ -95,6 +95,21 @@ We join this large list, turn that into an int, and then we return a HASHash obj
         return HASHash(last_int)
 
 
+# CHA - Customizable-Hashing-Algorithm
+CHA works the same way as HAS, but customizable. so I'll only talk about the customization.
+
+## message
+The plaintext that enters the function.
+
+## padding
+The padding as a byte string separated by a space, like : ```'01110011 00110011 11000110'```.
+this will be appended to the message
+## shaffle_list
+The letter shuffle list [Check the encipher step in the HAS](#How-HAS-works)
+
+## size_limit_of_0
+how many 0 are allowed
+
 # How HASS works
 ## Step One: shuffling
 Foreach letter we:

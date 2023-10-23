@@ -8,6 +8,9 @@ class HASHash:
     def __init__(self, value):
         self.value = value
 
+    def __repr__(self):
+        return self.num()
+
     def hexdigest(self, b=None):
         if b is None:
             return hex(self.value).strip("0x")
@@ -49,6 +52,58 @@ class HASHash:
         else:
             last = 1
         return HASHash(last)
+
+    @staticmethod
+    def CHA(message: str, padding: str, shaffle_list: list, size_limit_of_0: int):
+        """
+        Customizable-Hashing-Algorithm
+        CHA is like HAS but customizable
+
+        :param message: The plaintext input
+        :param padding: The padding as a byte string separated by a ' ', like : '01110011 00110011 11000110'
+        :param shaffle_list: the letter shuffle list
+        :param size_limit_of_0: how many 0 are allowed,
+        :return: HASHash
+        """
+        en = st.ascii_letters + st.digits + st.punctuation
+        padding_list = padding.split(" ")
+        om = []
+
+        for c in message:
+            for i in range(0, pow(ord(c), ord(c), len(shaffle_list))):
+                first = shaffle_list.pop(0)
+                shaffle_list.append(first)
+            if c in en:
+                index = en.index(c)
+                om.append(shaffle_list[index])
+            else:
+                om.append(c)
+        bm = [format(ord(c), 'b') for c in om]
+        amount_to_shift = len(padding_list) - len(bm)
+        if amount_to_shift <= 0: amount_to_shift *= -1
+        shift_must = ord(om[0]) if len(om) > 0 else 153
+        amount_to_shift += shift_must
+        for i, b in enumerate(padding_list):
+            bm.append(b)
+        key = bm.copy()
+        for i in range(0, amount_to_shift):
+            first = key.pop(0)
+            key.append(first)
+        if key == bm:
+            first = key.pop(0)
+            key.append(first)
+        bm = list(int(c, 2) for c in bm)
+        key = list(int(c, 2) for c in key)
+        xored = []
+        for i in range(len(bm)):
+            xored.append(bm[i] ^ key[i])
+        s_xored = [str(n) for n in xored]
+        s = ''
+        for string in s_xored:
+            s += string.strip("-")
+        s = s[0:size_limit_of_0]
+        last_int = int(s)
+        return HASHash(last_int)
 
     @staticmethod
     def HAS(message: str, size_limit_of_0=155):
