@@ -84,8 +84,10 @@ In this step we XOR the ciphertext with our key
         for i in range(len(bm)):
             xored.append(bm[i] ^ key[i])
         s_xored = [str(n) for n in xored]
+## Step Five: Repeat
+This process repeat 1000 times using the "s" as the message
 
-## Step Five: Final
+## Step Six: Final
 We join this large list, turn that into an int, and then we return a HASHash object of it
 
         s = ''
@@ -109,6 +111,9 @@ The letter shuffle list [Check the encipher step in the HAS](#How-HAS-works)
 
 ## size_limit_of_0
 how many 0 are allowed
+
+## rep
+number of reputation
 
 # How HASS works
 ## Step One: shuffling
