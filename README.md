@@ -146,6 +146,31 @@ We make the ciphertext list be a string, and then turning into int
             last = 1
         return HASHash(last)
 
+# Creating your own algorithm
+
+## RandomShaffle
+This function will help you make your own random shuffled charset (```random.shuffle(letters)``` but with built-in langs)
+returns a string
+
+## RandomBits
+This function will help you make your own random bits.
+returns a string or a list
+
+```
+how_many:
+how many groups of bits do you want.
+```
+```
+group:
+how many in one group, 8 for a byte
+```
+```
+how_to_format:
+Can be " " or "l". 
+"l" for a list.
+" " for a " ".join(bits)
+```
+
 ### _*Note*_
 This function will not return a fixed length, and will only work on english letters for now
 

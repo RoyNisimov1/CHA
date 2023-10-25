@@ -1,5 +1,6 @@
 import string as st
 import hashlib
+import random
 class HASHash:
     """
         Hashing . Algorithm. Simple
@@ -109,6 +110,28 @@ class HASHash:
             message = s
         last_int = int(s)
         return HASHash(last_int)
+
+    @staticmethod
+    def RandomShaffle(charset):
+        letters = st.ascii_letters + st.digits + st.punctuation + ' ' + "ñАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯابجدهوزحطيكلمنسعفصقرشتثخذضظغäöüß" + charset
+        letters = list(letters)
+        random.shuffle(letters)
+        return letters
+
+    @staticmethod
+    def RandomBits(how_many: int, group=8, how_to_format=' '):
+        bit_list = []
+        for i in range(how_many):
+            to_append = ''
+            for j in range(group):
+                to_append += str(random.randint(0, 1))
+            bit_list.append(to_append)
+        if how_to_format == ' ':
+            return ' '.join(bit_list)
+        elif how_to_format == 'l':
+            return bit_list.copy()
+        else:
+            raise Exception("How to format can be ' ' or 'l'!")
 
     @staticmethod
     def HAS(message: str):
