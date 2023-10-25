@@ -1,6 +1,9 @@
 # Hashing use cases
 
-Storing passwords with salt
+1. Detecting duplicated records.
+2. Locating points that are near each other.
+3. Verifying message integrity.
+4. Verifying passwords.
 
 # How to use
 
@@ -146,6 +149,10 @@ We make the ciphertext list be a string, and then turning into int
             last = 1
         return HASHash(last)
 
+### _*Note*_
+This function will not return a fixed length, and will only work on english letters for now
+
+
 # Creating your own algorithm
 
 ## RandomShaffle
@@ -171,18 +178,15 @@ Can be " " or "l".
 " " for a " ".join(bits)
 ```
 
-### _*Note*_
-This function will not return a fixed length, and will only work on english letters for now
 
+# *_Notes_*:
 
-_Notes_:
+1. _Use the hexdigest function to get the value in hex_
 
-_Use the hexdigest function to get the value in hex_
+2. *THIS HASH FUNCTION IS PROBABLY NOT THE SAFEST!*
 
-*THIS HASH FUNCTION IS PROBABLY NOT THE SAFEST!*
+3. I made it because I was bored, so please use something like Argon2 or Sha512 for real use cases.
 
-I made it because I was bored, so please use something like Argon2 or Sha512 for real use cases.
-
-Also, there might already be a similar hashing function that I don't know of
+4. Also, there might already be a similar hashing function that I don't know of
 
 PS: I know my code looks bad
