@@ -113,7 +113,7 @@ The letter shuffle list [Check the encipher step in the HAS](#How-HAS-works)
 how many 0 are allowed
 
 ## rep
-number of reputation
+number of repetitions
 
 # How HASS works
 ## Step One: shuffling
