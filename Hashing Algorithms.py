@@ -71,6 +71,7 @@ class HASHash:
         common_alphabets = 'ñАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯابجدهوزحطيكلمنسعفصقرشتثخذضظغäöüß'
         characters = st.ascii_letters + st.digits + st.punctuation + char_set + common_alphabets + ' '
         padding_list = padding.split(" ")
+        s = ''
         for times in range(rep):
             om = []
 
@@ -116,8 +117,8 @@ class HASHash:
 
     @staticmethod
     def CHAB(message: bytes, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str):
-        m = message.decode()
-        return HASHash.CHA(m, padding, shaffle_list, size_limit_of_0, rep, char_set)
+        mess = message.decode()
+        return HASHash.CHA(mess, padding, shaffle_list, size_limit_of_0, rep, char_set)
 
     @staticmethod
     def HAS(message: str):
