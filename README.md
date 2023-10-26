@@ -87,7 +87,9 @@ In this step we XOR the ciphertext with our key
         for i in range(len(bm)):
             xored.append(bm[i] ^ key[i])
         s_xored = [str(n) for n in xored]
-## Step Five: Repeat
+## Step Five: Repeat and shift padding
+We shift the padding by ```amount_to_shift**amount_to_shift % len(padding_list)```
+
 This process repeat 1000 times using the "s" as the message
 
 ## Step Six: Final
