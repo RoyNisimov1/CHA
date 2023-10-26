@@ -120,6 +120,12 @@ how many 0 are allowed
 ## rep
 number of repetitions
 
+## char_set
+Additional chars used in the shuffle_list
+
+## shift_must_if_om0
+```shift_must = ord(om[0]) if len(om) > 0 else shift_must_if_om0```
+
 # CHAB
 Like CHA but the message is in bytes
 

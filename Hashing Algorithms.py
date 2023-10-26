@@ -55,11 +55,12 @@ class HASHash:
         return HASHash(last)
 
     @staticmethod
-    def CHA(message: str, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str):
+    def CHA(message: str, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int):
         """
         Customizable-Hashing-Algorithm
         CHA is like HAS but customizable
 
+        :param shift_must_if_om0: what's shift must is
         :param message: The plaintext input
         :param padding: The padding as a byte string separated by a ' ', like : '01110011 00110011 11000110'
         :param shaffle_list: the letter shuffle list
@@ -87,7 +88,7 @@ class HASHash:
             bm = [format(ord(c), 'b') for c in om]
             amount_to_shift = len(padding_list) - len(bm)
             if amount_to_shift <= 0: amount_to_shift *= -1
-            shift_must = ord(om[0]) if len(om) > 0 else 153
+            shift_must = ord(om[0]) if len(om) > 0 else shift_must_if_om0
             amount_to_shift += shift_must
             for i, b in enumerate(padding_list):
                 bm.append(b)
@@ -116,15 +117,15 @@ class HASHash:
         return HASHash(last_int)
 
     @staticmethod
-    def CHAB(message: bytes, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str):
+    def CHAB(message: bytes, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int):
         mess = message.decode()
-        return HASHash.CHA(mess, padding, shaffle_list, size_limit_of_0, rep, char_set)
+        return HASHash.CHA(mess, padding, shaffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
 
     @staticmethod
     def HAS(message: str):
         padding = '01110011 00110011 11000110 10001101 01100111 00010001 00001110 11100100 11111100 11010111 10010111 00001111 01100111 10010100 11100101 00010100 00010110 11101011 00111110 01110000 00010000 00010100 11111110 11000101 11000011 00000100 01011011 01100010 01101000 10001001 00110000 11100000 00000100 00000010 01001111 00110011 11110101 01010101 11011111 00011010 01010101 01100110 10110110 11110110 00000000 11011111 11101100 01011100 11111110 11111011 11011100 00010001 00100100 00101100 11101100 11000111 10110111 11000100 10001010 11101111 00010010 00101011 11000111'
         shaffle_list = ['4', '?', 'З', 'A', 'Q', '~', 'Р', '$', 'U', '1', 'M', '9', '{', 'F', 'y', 'ث', 'Z', 'a', '!', 'K', 'C', 'ß', 'Ц', 'غ', 'W', 't', 'ظ', 'И', 'ط', 'z', '=', '_', '3', 'Д', 'ö', 'Ж', 'Л', 'L', 'ض', 'ش', '%', 'В', 'T', 'ص', 'Ф', 'С', 's', 'Г', 'خ', 'ل', 'D', 'f', 'ü', '}', '2', '5', '/', '6', 'ز', 'ت', 'e', '(', 'v', '\\', 'ف', '|', '^', '[', '"', 'ن', ':', 'ر', ']', 'ه', 'Ш', 'К', 'Х', '*', 'V', ' ', 'ج', 'ب', '<', "'", 'H', 'l', 'Й', 'د', 'Н', 'Б', '8', 'Ъ', '+', 'ح', 'Щ', 'ك', 'Е', 'q', ',', 'Я', 'S', 'O', 'ñ', 'g', '@', 'c', 'Ч', 'Ь', 'r', 'h', 'J', '-', 'k', 'А', 'П', 'Ю', '7', '&', 'n', 'و', 'Ы', 'ا', '.', 'ق', '>', 'B', 'У', 'س', 'u', 'X', '0', ')', 'М', 'Т', 'i', 'E', 'd', 'Ё', 'ع', 'I', 'N', 'b', 'Э', 'R', 'o', 'م', 'Y', 'ذ', 'G', ';', 'О', 'w', 'x', '#', 'ä', 'j', 'ي', 'm', 'P', 'p', '`']
-        return HASHash.CHA(message, padding, shaffle_list, 155, 1000, '')
+        return HASHash.CHA(message, padding, shaffle_list, 155, 1000, '', 153)
 
 class HashMaker:
     @staticmethod
