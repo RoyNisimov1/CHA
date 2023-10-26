@@ -107,7 +107,7 @@ class HASHash:
             for string in s_xored:
                 s += string.strip("-")
             s = s[0:size_limit_of_0]
-            for i in range(amount_to_shift):
+            for i in range(pow(amount_to_shift, amount_to_shift, len(padding_list))):
                 first = padding_list.pop(0)
                 padding_list.append(first)
             message = s
