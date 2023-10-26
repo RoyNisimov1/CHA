@@ -102,7 +102,7 @@ We join this large list, turn that into an int, and then we return a HASHash obj
         return HASHash(last_int)
 
 
-# CHA - Customizable-Hashing-Algorithm
+# CHA - Customizable Hashing Algorithm
 CHA works the same way as HAS, but customizable. so I'll only talk about the customization.
 
 ## message
@@ -155,7 +155,7 @@ We make the ciphertext list be a string, and then turning into int
 This function will not return a fixed length, and will only work on english letters for now
 
 
-# Creating your own algorithm
+# Creating your own algorithm using HashMaker
 
 ## RandomShaffle
 This function will help you make your own random shuffled charset (```random.shuffle(letters)``` but with built-in langs)
@@ -179,7 +179,11 @@ Can be " " or "l".
 "l" for a list.
 " " for a " ".join(bits)
 ```
+## get_CHA_args
+This function will print the syntax needed. and return the padding, and shuffle key.
 
+### _Note_
+There is a chance that some padding or shuffle_key have a backdoor in them (Though not probable). 
 
 # *_Notes_*:
 
@@ -190,5 +194,7 @@ Can be " " or "l".
 3. I made it because I was bored, so please use something like Argon2 or Sha512 for real use cases.
 
 4. Also, there might already be a similar hashing function that I don't know of
+
+5. In the HashMaker there is a chance that some padding or shuffle_key have a backdoor in them (Though not probable). 
 
 PS: I know my code looks bad
