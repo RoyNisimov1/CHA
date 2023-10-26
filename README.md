@@ -120,6 +120,9 @@ how many 0 are allowed
 ## rep
 number of repetitions
 
+# CHAB
+Like CHA but the message is in bytes
+
 # How HASS works
 ## Step One: shuffling
 Foreach letter we:
