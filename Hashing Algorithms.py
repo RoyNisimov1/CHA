@@ -118,7 +118,7 @@ class HASHash:
 
     @staticmethod
     def CHAB(message: bytes, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int):
-        mess = message.decode()
+        mess = str(message)
         return HASHash.CHA(mess, padding, shaffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
 
     @staticmethod
