@@ -104,10 +104,6 @@ if __name__ == '__main__':
         d = Feistel64.DE(e,  8, fCHA, 'd', inp)
         print(d)
     elif mode == '2':
-        def fCHA(b):
-            padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-            return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
-
 
         s = input("Enter an input:\n").encode()
         inp = input('Provide and inp:\n')
@@ -115,9 +111,6 @@ if __name__ == '__main__':
         print(e)
     elif mode == '3':
 
-        def fCHA(b):
-            padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-            return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
 
         s = input("Enter an input:\n")
         inp = input('Provide and inp:\n')
