@@ -36,12 +36,12 @@ class HASHash:
                        'Е', 'W', '¸']
 
         size = 154
-        rep = 500
+        rep = 16
         char_set = ''
         smio = 153
-        return padding, shuffle_key, size,rep,char_set,smio
+        return padding, shuffle_key, size, rep, char_set, smio
 
-    def __init__(self, value):
+    def __init__(self, value: int):
         self.value = value
 
     def __repr__(self):
@@ -152,18 +152,23 @@ class HASHash:
         return HASHash(last_int)
 
     @staticmethod
-    def CHAB(message: bytes, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int):
+    def CHAB(message: bytes, padding: str, shaffle_list: list, size_limit_of_0: int, rep: int, char_set: str,
+             shift_must_if_om0: int):
         mess = str(message)
-        return HASHash.CHA(mess, padding, shaffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
+        c = HASHash.CHA(mess, padding, shaffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
+        return bytes(
+            str(HASHash.CHA(mess, padding, shaffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0).value),
+            'utf-8')
+
 
     @staticmethod
     def HAS(message: str):
-        padding, shuffle_list, size, rep, char_set,smio = HASHash.get_HAS_args()
+        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
         return HASHash.CHA(message, padding, shuffle_list, size, rep, char_set, smio)
 
     @staticmethod
     def HASB(message: bytes):
-        padding, shuffle_list, size, rep, char_set,smio = HASHash.get_HAS_args()
+        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
         return HASHash.CHAB(message, padding, shuffle_list, size, rep, char_set, smio)
 
 class HashMaker:
