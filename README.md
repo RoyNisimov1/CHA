@@ -43,18 +43,17 @@ Using HASS:
 
 # How HAS works
 ## Step One: Encipher
-The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** 2 each time. 
+The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** ord c each time. 
 
-        shaffle_list = ['p', 'P', '{', 'D', '=', 'F', 'l', 'f', '@', 'b', 'k', '5', 'M', 'H', ':', 'U', '[', 'A', 'u', '`', 'w', "'", '1', 'S', '~', '^', '"', 'L', '3', '#', 'C', '!', '\\', 'a', 'y', 'Q', 'X', 'v', '4', '2', 'V', 'g', 'h', 'n', 'R', 'B', 'I', '|', 'O', 'W', 'd', ' ', 'T', 'G', '/', 'o', '&', ']', 'Y', 'E', '<', 'z', '?', '$', '9', 't', '}', '7', 'm', ';', '.', 's', '-', '0', 'r', ')', '8', '+', 'Z', ',', '%', 'e', 'q', '6', 'N', '>', 'x', 'c', '*', 'K', 'J', 'i', '(', 'j', '_']
-        for c in message:
-            try:
-                index = en.index(c)
-                om.append(shaffle_list[index])
-            except ValueError:
-                om.append(c)
-            for i in range(0, ord(c)**2):
-                first = shaffle_list.pop(0)
-                shaffle_list.append(first)
+                    for c in message:
+                for i in range(0, pow(ord(c), ord(c), len(shaffle_list))):
+                    first = shaffle_list.pop(0)
+                    shaffle_list.append(first)
+                if c in characters:
+                    index = characters.index(c)
+                    om.append(shaffle_list[index])
+                else:
+                    om.append(c)
 
 ## Step Two: Padding
 This step adds padding to the cipher text, we also have an amount to shift at the end of it
@@ -90,7 +89,7 @@ In this step we XOR the ciphertext with our key
 ## Step Five: Repeat and shift padding
 We shift the padding by ```amount_to_shift**amount_to_shift % len(padding_list)```
 
-This process repeat 1000 times using the "s" as the message
+This process repeat 16 times using the "s" as the new message
 
 ## Step Six: Final
 We join this large list, turn that into an int, and then we return a HASHash object of it
@@ -232,6 +231,7 @@ this will return a list of hexes
 ### mode 'd'
 will return the string
 
+[Feistel Cipher - Computerphile](https://www.youtube.com/watch?v=FGhj3CGxl8I)
 
 # *_Notes_*:
 
