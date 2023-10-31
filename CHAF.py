@@ -1,5 +1,7 @@
-from Hashing_Algorithms import *
+import json
 
+from Hashing_Algorithms import *
+import ast
 class Block:
     def __init__(self, value: str):
         self.value = value
@@ -75,12 +77,65 @@ class Feistel64:
             return b''.join(ra1)
 
 if __name__ == '__main__':
+    with open("Key.json", "r") as f:
+        data = json.loads(f.read())
+    if data["padding"] == '':
+        print("No key is set up!")
+    mode = input("""1) Showcase
+2) Encrypt
+3) Decrypt
+4) Exit
+5) Generate
+6) Get Showcase args
+7) Set Key
+""")
+
+    def get_args():
+        with open("Key.json", "r") as f:
+            data = json.loads(f.read())
+        return data['padding'], data['shuffle']
     def fCHA(b):
-        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
+        padding, shuffle_list = get_args()
+        print(padding)
+        print(shuffle_list)
         return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
-    s = input("Enter an input:\n").encode()
-    inp = input('Provide and inp:\n')
-    e = Feistel64.DE(s,  8, fCHA, "e", inp)
-    print(e)
-    d = Feistel64.DE(e,  8, fCHA, 'd', inp)
-    print(d)
+    if mode == '1':
+
+        s = input("Enter an input:\n").encode()
+        inp = input('Provide and inp:\n')
+        e = Feistel64.DE(s,  8, fCHA, "e", inp)
+        print(e)
+        d = Feistel64.DE(e,  8, fCHA, 'd', inp)
+        print(d)
+    elif mode == '2':
+        def fCHA(b):
+            padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
+            return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
+
+
+        s = input("Enter an input:\n").encode()
+        inp = input('Provide and inp:\n')
+        e = Feistel64.DE(s, 8, fCHA, "e", inp)
+        print(e)
+    elif mode == '3':
+
+        def fCHA(b):
+            padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
+            return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
+
+        s = input("Enter an input:\n")
+        inp = input('Provide and inp:\n')
+        d = Feistel64.DE(s, 8, fCHA, "d", inp)
+        print(d)
+    elif mode == '4': exit()
+    elif mode == '5': HashMaker.get_CHA_args()
+    elif mode == '6':
+        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
+        print(f"{padding}\n{shuffle_list}")
+    elif mode == '7':
+        p = input("padding\n")
+        s = ast.literal_eval(input('shuffle:\n'))
+        data['padding'] = p
+        data["shuffle"] = s
+        with open("Key.json", "w") as f:
+            f.write(json.dumps(data, indent=2))
