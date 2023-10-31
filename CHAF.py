@@ -1,5 +1,3 @@
-import hashlib
-import string as st
 from Hashing_Algorithms import *
 
 class Block:
@@ -31,11 +29,12 @@ class Feistel64:
         block_len = 32
         blockA = Block(message[0:block_len])
         blockB = Block(message[block_len:])
+
         def swap(A, B):
             temp = A
             A = B
             B = temp
-            return A,B
+            return A, B
 
         for i in range(num_of_rounds):
             temp_bit = func(blockB.get_value())
@@ -52,18 +51,25 @@ class Feistel64:
         return Feistel64.encrypt(b, num_of_rounds, func)
 
     @staticmethod
-    def DE(message, num_of_rounds, func, mode='e'):
+    def DE(message, num_of_rounds, func, mode='e', inp='l'):
         mode = mode.lower()
+        inp = inp.lower()
+        if inp not in ['s', 'l']: raise Exception("inp needs to be l or s!")
+
         def split_nth(str1, n):
             return [str1[i:i + n] for i in range(0, len(str1), n)]
         if mode == 'e':
             ra = []
-            ml =split_nth(message,64)
+            ml = split_nth(message, 64)
             for i in ml:
                 ra.append(Feistel64.encrypt(i, num_of_rounds, func).hex())
-            return ra
+            if inp == 'l':
+                return ra
+            elif inp == 's':
+                return "".join(ra)
         elif mode == 'd':
             ra1 = []
+            if inp == 's': message = split_nth(message, 128)
             for e in message:
                 ra1.append(Feistel64.decrypt(e, num_of_rounds, func))
             return b''.join(ra1)
@@ -71,9 +77,10 @@ class Feistel64:
 if __name__ == '__main__':
     def fCHA(b):
         padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-        return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
+        return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
     s = input("Enter an input:\n").encode()
-    e = Feistel64.DE(s,  8, fCHA)
+    inp = input('Provide and inp:\n')
+    e = Feistel64.DE(s,  8, fCHA, "e", inp)
     print(e)
-    d = Feistel64.DE(e,  8,fCHA, 'd')
+    d = Feistel64.DE(e,  8, fCHA, 'd', inp)
     print(d)
