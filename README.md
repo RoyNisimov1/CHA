@@ -194,6 +194,45 @@ This function will print the syntax needed. and return the padding, and shuffle 
 ### _Note_
 There is a chance that some padding or shuffle_key have a backdoor in them (Though not probable). 
 
+# Encryption with CHA
+
+CHA can be also used as an encryption function using the feistel cipher (see CHAF)!
+
+
+for example:
+```
+    def fCHA(b):
+        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
+        return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
+    s = input("Enter an input:\n").encode()
+    e = Feistel64.DE(s,  8, fCHA)
+    print(e)
+    d = Feistel64.DE(e,  8,fCHA, 'd')
+    print(d)
+```
+
+to make your own:
+
+## define a function
+define a function using this template
+```
+    def fCHA(b):
+        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
+        return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
+```
+
+the function needs to return bytes, here we're using CHAB with the HAS args. 
+
+## Call DE
+
+then the Feistel function uses 64 bits everytime, I configed the DE function on the Feistel64 class
+to do this automatically.
+### mode 'e'
+this will return a list of hexes
+### mode 'd'
+will return the string
+
+
 # *_Notes_*:
 
 1. _Use the hexdigest function to get the value in hex_

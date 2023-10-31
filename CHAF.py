@@ -67,14 +67,13 @@ class Feistel64:
             for e in message:
                 ra1.append(Feistel64.decrypt(e, num_of_rounds, func))
             return b''.join(ra1)
-def fSha(b):
-    return hashlib.sha512(b).digest()
 
-def fCHA(b):
-    padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-    return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
-
-e = Feistel64.DE(b"Test",  8, fCHA)
-print(e)
-d = Feistel64.DE(e,  8,fCHA, 'd')
-print(d)
+if __name__ == '__main__':
+    def fCHA(b):
+        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
+        return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
+    s = input("Enter an input:\n").encode()
+    e = Feistel64.DE(s,  8, fCHA)
+    print(e)
+    d = Feistel64.DE(e,  8,fCHA, 'd')
+    print(d)
