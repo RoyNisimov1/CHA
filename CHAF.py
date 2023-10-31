@@ -91,13 +91,9 @@ if __name__ == '__main__':
 """)
 
     def get_args():
-        with open("Key.json", "r") as f:
-            data = json.loads(f.read())
-        return data['padding'], data['shuffle']
+        return data['padding'], data['shuffle'].copy()
     def fCHA(b):
         padding, shuffle_list = get_args()
-        print(padding)
-        print(shuffle_list)
         return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
     if mode == '1':
 
