@@ -79,7 +79,10 @@ class Feistel64:
 if __name__ == '__main__':
     with open("Key.json", "r") as f:
         data = json.loads(f.read())
-    if data["padding"] == '':
+    key_name = input('Key name:\n')
+    if key_name not in data:
+        data[key_name] = {"padding": "", "shuffle": []}
+    if data[key_name]["padding"] == '':
         print("No key is set up!")
     mode = input("""1) Showcase
 2) Encrypt
@@ -88,10 +91,13 @@ if __name__ == '__main__':
 5) Generate
 6) Get Showcase args
 7) Set Key
+8) Get current key
+9) Delete key
 """)
 
     def get_args():
-        return data['padding'], data['shuffle'].copy()
+        return data[key_name]['padding'], data[key_name]['shuffle'].copy()
+
     def fCHA(b):
         padding, shuffle_list = get_args()
         return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
@@ -124,7 +130,18 @@ if __name__ == '__main__':
     elif mode == '7':
         p = input("padding\n")
         s = ast.literal_eval(input('shuffle:\n'))
-        data['padding'] = p
-        data["shuffle"] = s
+        data[key_name]['padding'] = p
+        data[key_name]["shuffle"] = s
         with open("Key.json", "w") as f:
             f.write(json.dumps(data, indent=2))
+    elif mode == '8':
+        print(f"Padding:\n{data[key_name]['padding']}\nShuffle list:\n{data[key_name]['shuffle']}")
+
+    elif mode == '9':
+        yes_or_no = input("Are your sure? this action can not be undone!").lower()
+        if yes_or_no in ['y', 'yes']:
+            if input("type 'Delete'").lower() == 'delete':
+                del data[key_name]
+
+    with open("Key.json", "w") as f:
+        f.write(json.dumps(data, indent=2))
