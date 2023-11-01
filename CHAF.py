@@ -108,7 +108,7 @@ if __name__ == '__main__':
         e = Feistel64.DE(s,  rep, fCHA, "e", inp)
         print(e)
         d = Feistel64.DE(e,  rep, fCHA, 'd', inp)
-        print(d)
+        print(d.decode().strip())
     elif mode == '2':
         padding, shuffle_list, slo0, rep, char_set, shift = get_args()
         s = input("Enter an input:\n").encode()
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         s = input("Enter an input:\n")
         inp = input('Provide and inp:\n')
         d = Feistel64.DE(s, rep, fCHA, "d", inp)
-        print(d)
+        print(d.decode().strip())
     elif mode == '4': exit()
     elif mode == '5': HashMaker.get_CHA_args()
     elif mode == '6':
