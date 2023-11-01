@@ -96,31 +96,31 @@ if __name__ == '__main__':
 """)
 
     def get_args():
-        return data[key_name]['padding'], data[key_name]['shuffle'].copy()
+        return data[key_name]['padding'], data[key_name]['shuffle'].copy(), data[key_name]['slo0'], data[key_name]['rep'], data[key_name]['charset'], data[key_name]['shift']
 
     def fCHA(b):
-        padding, shuffle_list = get_args()
-        return HASHash.CHAB(b, padding, shuffle_list, 128, 16, '', 153)
+        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
+        return HASHash.CHAB(b, padding, shuffle_list, slo0, rep, char_set, shift)
     if mode == '1':
-
+        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
         s = input("Enter an input:\n").encode()
         inp = input('Provide and inp:\n')
-        e = Feistel64.DE(s,  8, fCHA, "e", inp)
+        e = Feistel64.DE(s,  rep, fCHA, "e", inp)
         print(e)
-        d = Feistel64.DE(e,  8, fCHA, 'd', inp)
+        d = Feistel64.DE(e,  rep, fCHA, 'd', inp)
         print(d)
     elif mode == '2':
-
+        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
         s = input("Enter an input:\n").encode()
         inp = input('Provide and inp:\n')
-        e = Feistel64.DE(s, 8, fCHA, "e", inp)
+        e = Feistel64.DE(s, rep, fCHA, "e", inp)
         print(e)
     elif mode == '3':
 
-
+        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
         s = input("Enter an input:\n")
         inp = input('Provide and inp:\n')
-        d = Feistel64.DE(s, 8, fCHA, "d", inp)
+        d = Feistel64.DE(s, rep, fCHA, "d", inp)
         print(d)
     elif mode == '4': exit()
     elif mode == '5': HashMaker.get_CHA_args()
@@ -130,8 +130,16 @@ if __name__ == '__main__':
     elif mode == '7':
         p = input("padding\n")
         s = ast.literal_eval(input('shuffle:\n'))
+        slo0 = int(input("slo0\n"))
+        rep = int(input("rep\n"))
+        charset = input("chrset\n")
+        shift_must = int(input("shift must\n"))
         data[key_name]['padding'] = p
         data[key_name]["shuffle"] = s
+        data[key_name]["slo0"] = slo0
+        data[key_name]["rep"] = rep
+        data[key_name]["charset"] = charset
+        data[key_name]["shift"] = shift_must
         with open("Key.json", "w") as f:
             f.write(json.dumps(data, indent=2))
     elif mode == '8':
