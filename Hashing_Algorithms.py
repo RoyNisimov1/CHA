@@ -158,7 +158,7 @@ class HASHash:
         mess = str(message)
         c = HASHash.CHA(mess, padding, shuffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
         return bytes(
-            str(HASHash.CHA(mess, padding, shuffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0).value),
+            str(c.value),
             'utf-8')
 
 
