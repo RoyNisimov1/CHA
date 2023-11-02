@@ -132,11 +132,11 @@ Can be " " or "l".
 This function will print the syntax needed. and return the padding, and shuffle key.
 
 ### _Note_
-There is a chance that some padding or shuffle_key have a backdoor in them (Though not probable). 
+There is a chance that some padding or shuffle_key have a backdoor in them (I don't know if there really is, but probably). 
 
 # Encryption with CHA
 
-CHA can be also used as an encryption function using the feistel cipher (see CHAF)!
+CHA can be also used as an encryption function using the feistel cipher (see CHAF)
 
 
 for example:
