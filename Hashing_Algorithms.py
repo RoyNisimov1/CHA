@@ -86,7 +86,7 @@ class CHAObject:
                 for i in range(0, pow(ord(c), ord(c), len(shuffle_list))):
                     first = shuffle_list.pop(0)
                     shuffle_list.append(first)
-                if c in characters:
+                if c in characters and c in shuffle_list:
                     index = characters.index(c)
                     om.append(shuffle_list[index])
                 else:
