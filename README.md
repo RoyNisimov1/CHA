@@ -66,13 +66,13 @@ We shift the padding by ```amount_to_shift**amount_to_shift % len(padding_list)`
 This process repeat 16 times using the "s" as the new message
 
 ## Step Six: Final
-We join this large list, turn that into an int, and then we return a HASHash object of it
+We join this large list, turn that into an int, and then we return a CHAObject object of it
 
         s = ''
         for string in s_xored:
             s += string.strip("-")
         last_int = int(s)
-        return HASHash(last_int)
+        return CHAObject(last_int)
 
 
 # CHA - Customizable Hashing Algorithm
@@ -142,8 +142,8 @@ CHA can be also used as an encryption function using the feistel cipher (see CHA
 for example:
 ```
     def fCHA(b):
-        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-        return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
+        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
+        return CHAObject.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
     s = input("Enter an input:\n").encode()
     e = Feistel64.DE(s,  8, fCHA)
     print(e)
@@ -157,8 +157,8 @@ to make your own:
 define a function using this template
 ```
     def fCHA(b):
-        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-        return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
+        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
+        return CHAObject.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
 ```
 
 the function needs to return bytes, here we're using CHAB with the RA args. 
