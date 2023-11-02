@@ -7,41 +7,15 @@
 
 # How to use
 
-Both functions will return a hash object, call hexdigest
 
-I made a main func where you can test both:
-
-        while True:
-        m = input("Message\n")
-        mode = input('Mode:\n HAS\n HASS\n').lower()
-        if mode == 'hass':
-            h = HASHash.HASS(m)
-
-        else:
-            h = HASHash.HAS(m)
-            # You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4
-        n_bits = input('You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4:\n')
-        if n_bits.isspace() or n_bits == '': n_bits = 128
-        n_bits = int(n_bits)
-        h = h.hexdigest(n_bits)
-        print(f"My hash:\n{h}")
-        h2 = hashlib.sha512(m.encode()).hexdigest()
-        print(f"Sha512:\n{h2}")
-
-Using HAS:
-
-    h = HASHash.HAS(message)
-    # for digesting use hexdigest with 128 for 512 bits
-    print(h.hexdigest(128))
-
-Using HASS:
-
-    h = HASHash.HASS(message)
-    # for digesting use hexdigest with 128 for 512 bits
-    print(h.hexdigest(128))
+I made a main func where you can test, but the syntax is:
+```
+CHAObject.RA(message).hexdigest(128)
+```
 
 
-# How HAS works
+
+# How RA works
 ## Step One: Encipher
 The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** ord c each time. 
 
@@ -102,7 +76,7 @@ We join this large list, turn that into an int, and then we return a HASHash obj
 
 
 # CHA - Customizable Hashing Algorithm
-CHA works the same way as HAS, but customizable. so I'll only talk about the customization.
+CHA works the same way as RA, but customizable. so I'll only talk about the customization.
 
 ## message
 The plaintext that enters the function.
@@ -111,7 +85,7 @@ The plaintext that enters the function.
 The padding as a byte string separated by a space, like : ```'01110011 00110011 11000110'```.
 this will be appended to the message
 ## shaffle_list
-The letter shuffle list [Check the encipher step in the HAS](#How-HAS-works)
+The letter shuffle list [Check the encipher step in the RA](#How-RA-works)
 
 ## size_limit_of_0
 how many 0 are allowed
@@ -128,39 +102,6 @@ Additional chars used in the shuffle_list
 # CHAB
 Like CHA but the message is in bytes
 
-# How HASS works
-## Step One: shuffling
-Foreach letter we:
-    
-1. Switch the letter for the one in the shuffle list
-2. Shift the shuffle list by the letter's ord
-
-
-        chars = st.ascii_letters + st.digits + st.punctuation + ' '
-        shuffled = ['9', 'n', '5', '<', '0', 'W', '_', '\\', '2', 'e', '(', 'u', "'", 'f', '~', 'y', 'v', 'U', 'O', 'N', 'm', 'F', '[', '+', 'i', 'Y', 'T', ':', 'B', 'Q', 'R', 'I', 'z', '?', 'L', 'j', '1', '*', ' ', 'J', 'q', 'r', 'X', '%', 'Z', '{', '7', 'h', 's', ';', '-', '!', 'b', 'M', 'k', 'c', '|', 'd', '&', 'V', 'l', 'P', '"', 'C', '@', 'H', 'a', '4', 'w', '=', 'x', '.', ',', '8', '6', 'G', 'g', 'A', '`', 't', ')', '#', '^', '/', '3', 'E', '$', '}', 'o', 'p', '>', 'D', 'S', 'K', ']']
-        return_str = ''
-        for ch in message:
-            if ch not in shuffled or ch not in chars: continue
-            index = chars.index(ch)
-            return_str += shuffled[index]
-            for i in range(0, ord(ch)):
-                first = shuffled.pop(0)
-                shuffled.append(first)
-
-## Step Two: turning into int
-We make the ciphertext list be a string, and then turning into int
-
-        s = ''
-        for c in return_str:
-            s += str(ord(c)**ord(c))
-        if len(s) > 0:
-            last = int(s)
-        else:
-            last = 1
-        return HASHash(last)
-
-### _*Note*_
-This function will not return a fixed length, and will only work on english letters for now
 
 
 # Creating your own algorithm using HashMaker
@@ -220,7 +161,7 @@ define a function using this template
         return HASHash.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
 ```
 
-the function needs to return bytes, here we're using CHAB with the HAS args. 
+the function needs to return bytes, here we're using CHAB with the RA args. 
 
 ## Call DE
 

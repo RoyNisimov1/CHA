@@ -1,13 +1,9 @@
 import string as st
 import hashlib
 import random
-class HASHash:
-    """
-        Hashing . Algorithm. Simple
-        ---------------------------
-    """
+class CHAObject:
     @staticmethod
-    def get_HAS_args():
+    def get_RA_args():
         padding = "00001000 00110011 00110111 11100001 01011110 00000111 11010110 10001000 01101111 01001100 00010110 00010001 11100011 00010000 00011110 11101001 11001111 11010011 10111000 01001110 01011010 00101010 10000001 00101111 10011100 11000100 11011001 01100001 10111001 10101101 11011110 11000110 11001110 10101010 01110100 11111100 00100100 01011001 00010100 10001100 10001000 11100110 00001111 10010011 11001110 01111110 10011001 11001000 01101111 10000011 01101001 00110110 01001010 11010100 01110001 00101010 11010010 11111011 10011001 11010001 00001100 01110001 11011111 01010110"
         shuffle_key = ['\x0c', '«', '[', 'ل', '\x97', '=', 'Ô', "'", '\x02', 'Й', '·', '¦', '¾', '#', 'Ä', 'Ã', 'º',
                        'O', '¯', '\x92', '\x9f', '÷', 'Û', 'f', '¤', '~', 't', 'D', 'o', ',', 'ù', 'å', 'ج', 'Z', ')',
@@ -60,34 +56,6 @@ class HASHash:
     def num(self):
         return self.value
 
-    @staticmethod
-    def HASS(message: str, size_limit_of_0=155):
-        """
-        :param message: the message
-        :param size_limit_of_0: how many 0 are allowed,
-        :return: HASHash
-        """
-        chars = st.ascii_letters + st.digits + st.punctuation + ' '
-        shuffled = ['9', 'n', '5', '<', '0', 'W', '_', '\\', '2', 'e', '(', 'u', "'", 'f', '~', 'y', 'v', 'U', 'O', 'N', 'm', 'F', '[', '+', 'i', 'Y', 'T', ':', 'B', 'Q', 'R', 'I', 'z', '?', 'L', 'j', '1', '*', ' ', 'J', 'q', 'r', 'X', '%', 'Z', '{', '7', 'h', 's', ';', '-', '!', 'b', 'M', 'k', 'c', '|', 'd', '&', 'V', 'l', 'P', '"', 'C', '@', 'H', 'a', '4', 'w', '=', 'x', '.', ',', '8', '6', 'G', 'g', 'A', '`', 't', ')', '#', '^', '/', '3', 'E', '$', '}', 'o', 'p', '>', 'D', 'S', 'K', ']']
-        return_str = ''
-        for ch in message:
-            for i in range(0, ord(ch)):
-                first = shuffled.pop(0)
-                shuffled.append(first)
-            if ch not in shuffled or ch not in chars: continue
-            index = chars.index(ch)
-            return_str += shuffled[index]
-        s = ''
-        for c in return_str:
-            s += str(ord(c)**ord(c))
-            if len(s) >= size_limit_of_0:
-                break
-        s = s[0:size_limit_of_0]
-        if len(s) > 0:
-            last = int(s)
-        else:
-            last = 1
-        return HASHash(last)
 
     @staticmethod
     def CHA(message: str, padding: str, shuffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int):
@@ -102,7 +70,7 @@ class HASHash:
         :param size_limit_of_0: how many 0 are allowed,
         :param rep: the number of repetition
         :param char_set: the charset, will be appended to the english alphabet
-        :return: HASHash
+        :return: CHAObject
         """
         shuffle_list = shuffle_list.copy()
         common_alphabets = 'ñАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯابجدهوزحطيكلمنسعفصقرشتثخذضظغäöüß'
@@ -150,27 +118,27 @@ class HASHash:
                 padding_list.append(first)
             message = s
         last_int = int(s)
-        return HASHash(last_int)
+        return CHAObject(last_int)
 
     @staticmethod
     def CHAB(message: bytes, padding: str, shuffle_list: list, size_limit_of_0: int, rep: int, char_set: str,
              shift_must_if_om0: int):
         mess = str(message)
-        c = HASHash.CHA(mess, padding, shuffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
+        c = CHAObject.CHA(mess, padding, shuffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
         return bytes(
             str(c.value),
             'utf-8')
 
 
     @staticmethod
-    def HAS(message: str):
-        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-        return HASHash.CHA(message, padding, shuffle_list, size, rep, char_set, smio)
+    def RA(message: str):
+        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_HAS_args()
+        return CHAObject.CHA(message, padding, shuffle_list, size, rep, char_set, smio)
 
     @staticmethod
-    def HASB(message: bytes):
-        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-        return HASHash.CHAB(message, padding, shuffle_list, size, rep, char_set, smio)
+    def RAB(message: bytes):
+        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_HAS_args()
+        return CHAObject.CHAB(message, padding, shuffle_list, size, rep, char_set, smio)
 
 class HashMaker:
     @staticmethod
@@ -202,7 +170,7 @@ class HashMaker:
         print(f"""The needed syntax is this: 
 padding = "{padding}"
 shuffle_key = {shuffle_key}
-HASHash.CHA($INSERT MESSAGE HERE, padding, shuffle_key, 128, $REP NUM HERE (500+ for more security), '')
+CHAObject.CHA($INSERT MESSAGE HERE, padding, shuffle_key, 128, $REP NUM HERE (500+ for more security), '')
 """)
         return padding, shuffle_key
 
@@ -212,18 +180,14 @@ if __name__ == '__main__':
         n_bits = input('You can put the length that you want in hexdigest(n_bits), for 512 put 128, 1/4:\n')
         if n_bits.isspace() or n_bits == '': n_bits = 128
         n_bits = int(n_bits)
-        h = HASHash.HAS(m)
-        h1 = HASHash.HASS(m)
+        h = CHAObject.RA(m)
         h2 = hashlib.sha512(m.encode())
         print('Hex:')
-        print(f"HAS Hex:\n{h.hexdigest(n_bits)}")
-        print(f"HASS Hex:\n{h1.hexdigest(n_bits)}")
+        print(f"RA Hex:\n{h.hexdigest(n_bits)}")
         print(f"Sha512 Hex:\n{h2.hexdigest()}")
         print('\nDigest:')
-        print(f"HAS Digest:\n{h.digest(n_bits)}")
-        print(f"HASS Digest:\n{h1.digest(n_bits)}")
+        print(f"RA Digest:\n{h.digest(n_bits)}")
         print(f"Sha512 Digest:\n{h2.digest()}")
         print('\nNums:')
-        print(f"HAS Num:\n{h.num()}")
-        print(f"HASS Num:\n{h1.num()}")
+        print(f"RA Num:\n{h.num()}")
         print(f"Sha512 Num:\n{int(h2.hexdigest(),16)}")

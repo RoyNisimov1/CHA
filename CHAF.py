@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     def fCHA(b):
         padding, shuffle_list, slo0, rep, char_set, shift = get_args()
-        return HASHash.CHAB(b, padding, shuffle_list, slo0, rep, char_set, shift)
+        return CHAObject.CHAB(b, padding, shuffle_list, slo0, rep, char_set, shift)
     if mode == '1':
         padding, shuffle_list, slo0, rep, char_set, shift = get_args()
         s = input("Enter an input:\n").encode()
@@ -120,13 +120,14 @@ if __name__ == '__main__':
         padding, shuffle_list, slo0, rep, char_set, shift = get_args()
         s = input("Enter an input:\n")
         inp = input('Provide and inp:\n')
+        if len(inp) == 0: inp = 'l'
         d = Feistel64.DE(s, rep, fCHA, "d", inp)
         print(d.decode().strip())
     elif mode == '4': exit()
     elif mode == '5': HashMaker.get_CHA_args()
     elif mode == '6':
-        padding, shuffle_list, size, rep, char_set, smio = HASHash.get_HAS_args()
-        print(f"{padding}\n{shuffle_list}")
+        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
+        print(padding, shuffle_list, size, rep, char_set, smio, sep='\n')
     elif mode == '7':
         p = input("padding\n")
         s = ast.literal_eval(input('shuffle:\n'))
