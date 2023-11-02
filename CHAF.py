@@ -78,7 +78,7 @@ class Feistel64:
 
 if __name__ == '__main__':
     with open("Key.json", "r") as f:
-        data = json.loads(f.read())
+        data = json.load(f)
     key_name = input('Key name:\n')
     if key_name not in data:
         data[key_name] = {"padding": "", "shuffle": []}
@@ -94,6 +94,11 @@ if __name__ == '__main__':
 8) Get current key
 9) Delete key
 """)
+
+    def save():
+        with open("Key.json", "w") as f:
+            json.dump(data, f, indent=4, sort_keys=True)
+
 
     def get_args():
         return data[key_name]['padding'], data[key_name]['shuffle'].copy(), data[key_name]['slo0'], data[key_name]['rep'], data[key_name]['charset'], data[key_name]['shift']
@@ -123,7 +128,9 @@ if __name__ == '__main__':
         if len(inp) == 0: inp = 'l'
         d = Feistel64.DE(s, rep, fCHA, "d", inp)
         print(d.decode().strip())
-    elif mode == '4': exit()
+    elif mode == '4':
+        save()
+        exit()
     elif mode == '5': HashMaker.get_CHA_args()
     elif mode == '6':
         padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
@@ -152,5 +159,4 @@ if __name__ == '__main__':
             if input("type 'Delete'").lower() == 'delete':
                 del data[key_name]
 
-    with open("Key.json", "w") as f:
-        f.write(json.dumps(data, indent=2))
+    save()
