@@ -35,7 +35,8 @@ class CHAObject:
         rep = 16
         char_set = ''
         smio = 153
-        return padding, shuffle_key, size, rep, char_set, smio
+        rev = 4
+        return padding, shuffle_key, size, rep, char_set, smio, rev
 
     def __init__(self, value: int):
         self.value = value
@@ -58,11 +59,12 @@ class CHAObject:
 
 
     @staticmethod
-    def CHA(message: str, padding: str, shuffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int):
+    def CHA(message: str, padding: str, shuffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int, rev_every: int):
         """
         Customizable-Hashing-Algorithm
         CHA is like HAS but customizable
 
+        :param rev_every: reverse the lists every
         :param shift_must_if_om0: what's shift must is
         :param message: The plaintext input
         :param padding: The padding as a byte string separated by a ' ', like : '01110011 00110011 11000110'
@@ -98,6 +100,8 @@ class CHAObject:
                 bm.append(b)
             key = bm.copy()
             for i in range(0, amount_to_shift):
+                if times % rev_every == 0:
+                    key.reverse()
                 first = key.pop(0)
                 key.append(first)
             if key == bm:
@@ -115,6 +119,8 @@ class CHAObject:
             s = s[0:size_limit_of_0]
             for i in range(pow(amount_to_shift, amount_to_shift, len(padding_list))):
                 first = padding_list.pop(0)
+                if times % rev_every == 0:
+                    padding_list.reverse()
                 padding_list.append(first)
             message = s
         last_int = int(s)
@@ -122,9 +128,9 @@ class CHAObject:
 
     @staticmethod
     def CHAB(message: bytes, padding: str, shuffle_list: list, size_limit_of_0: int, rep: int, char_set: str,
-             shift_must_if_om0: int):
+             shift_must_if_om0: int, rev: int):
         mess = str(message)
-        c = CHAObject.CHA(mess, padding, shuffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0)
+        c = CHAObject.CHA(mess, padding, shuffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0, rev)
         return bytes(
             str(c.value),
             'utf-8')
@@ -132,13 +138,13 @@ class CHAObject:
 
     @staticmethod
     def RA(message: str):
-        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
-        return CHAObject.CHA(message, padding, shuffle_list, size, rep, char_set, smio)
+        padding, shuffle_list, size, rep, char_set, smio, rev = CHAObject.get_RA_args()
+        return CHAObject.CHA(message, padding, shuffle_list, size, rep, char_set, smio, rev)
 
     @staticmethod
     def RAB(message: bytes):
-        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
-        return CHAObject.CHAB(message, padding, shuffle_list, size, rep, char_set, smio)
+        padding, shuffle_list, size, rep, char_set, smio, rev = CHAObject.get_RA_args()
+        return CHAObject.CHAB(message, padding, shuffle_list, size, rep, char_set, smio, rev)
 
 class HashMaker:
     @staticmethod

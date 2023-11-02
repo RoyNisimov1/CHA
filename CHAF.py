@@ -101,13 +101,13 @@ if __name__ == '__main__':
 
 
     def get_args():
-        return data[key_name]['padding'], data[key_name]['shuffle'].copy(), data[key_name]['slo0'], data[key_name]['rep'], data[key_name]['charset'], data[key_name]['shift']
+        return data[key_name]['padding'], data[key_name]['shuffle'].copy(), data[key_name]['slo0'], data[key_name]['rep'], data[key_name]['charset'], data[key_name]['shift'], data[key_name]["rev"]
 
     def fCHA(b):
-        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
-        return CHAObject.CHAB(b, padding, shuffle_list, slo0, rep, char_set, shift)
+        padding, shuffle_list, slo0, rep, char_set, shift, rev = get_args()
+        return CHAObject.CHAB(b, padding, shuffle_list, slo0, rep, char_set, shift, rev)
     if mode == '1':
-        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
+        padding, shuffle_list, slo0, rep, char_set, shift, rev = get_args()
         s = input("Enter an input:\n").encode()
         inp = input('Provide and inp:\n')
         e = Feistel64.DE(s,  rep, fCHA, "e", inp)
@@ -115,14 +115,14 @@ if __name__ == '__main__':
         d = Feistel64.DE(e,  rep, fCHA, 'd', inp)
         print(d.decode().strip())
     elif mode == '2':
-        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
+        padding, shuffle_list, slo0, rep, char_set, shift, rev = get_args()
         s = input("Enter an input:\n").encode()
         inp = input('Provide and inp:\n')
         e = Feistel64.DE(s, rep, fCHA, "e", inp)
         print(e)
     elif mode == '3':
 
-        padding, shuffle_list, slo0, rep, char_set, shift = get_args()
+        padding, shuffle_list, slo0, rep, char_set, shift, rev = get_args()
         s = input("Enter an input:\n")
         inp = input('Provide and inp:\n')
         if len(inp) == 0: inp = 'l'
@@ -136,12 +136,14 @@ if __name__ == '__main__':
         rep = random.randint(8,16)
         slo0 = 128
         sm = random.randint(256,512)
+        rev = random.randint(2,10)
         data[key_name]['padding'] = p
         data[key_name]["shuffle"] = s
         data[key_name]["slo0"] = slo0
         data[key_name]["rep"] = rep
         data[key_name]["charset"] = ''
         data[key_name]["shift"] = sm
+        data[key_name]['rev'] = rev
 
     elif mode == '6':
         padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
@@ -153,12 +155,14 @@ if __name__ == '__main__':
         rep = int(input("rep\n"))
         charset = input("chrset\n")
         shift_must = int(input("shift must\n"))
+        rev = int(input("Rev\n"))
         data[key_name]['padding'] = p
         data[key_name]["shuffle"] = s
         data[key_name]["slo0"] = slo0
         data[key_name]["rep"] = rep
         data[key_name]["charset"] = charset
         data[key_name]["shift"] = shift_must
+        data[key_name]["rev"] = rev
         with open("Key.json", "w") as f:
             f.write(json.dumps(data, indent=2))
     elif mode == '8':
