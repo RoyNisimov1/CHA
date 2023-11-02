@@ -131,7 +131,18 @@ if __name__ == '__main__':
     elif mode == '4':
         save()
         exit()
-    elif mode == '5': HashMaker.get_CHA_args()
+    elif mode == '5':
+        p, s = HashMaker.get_CHA_args()
+        rep = random.randint(8,16)
+        slo0 = 128
+        sm = random.randint(256,512)
+        data[key_name]['padding'] = p
+        data[key_name]["shuffle"] = s
+        data[key_name]["slo0"] = slo0
+        data[key_name]["rep"] = rep
+        data[key_name]["charset"] = ''
+        data[key_name]["shift"] = sm
+
     elif mode == '6':
         padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
         print(padding, shuffle_list, size, rep, char_set, smio, sep='\n')
