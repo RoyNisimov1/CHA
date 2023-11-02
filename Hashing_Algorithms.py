@@ -132,12 +132,12 @@ class CHAObject:
 
     @staticmethod
     def RA(message: str):
-        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_HAS_args()
+        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
         return CHAObject.CHA(message, padding, shuffle_list, size, rep, char_set, smio)
 
     @staticmethod
     def RAB(message: bytes):
-        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_HAS_args()
+        padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
         return CHAObject.CHAB(message, padding, shuffle_list, size, rep, char_set, smio)
 
 class HashMaker:
