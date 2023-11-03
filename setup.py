@@ -3,8 +3,8 @@ from setuptools import setup
 DESC = 'A Hashing and encryption with Customizable Hashing Algorithm CHA, WARNING: DO NOT USE IN REAL USE CASES! THIS WAS MADE JUST FOR FUN!'
 
 setup(
-    name='CHA-Hash',
-    version='0.1',
+    name='cha_hashing',
+    version='0.4.1',
     description=DESC,
     long_description="My hashing algorithm and cipher CHA, WARNING: DO NOT USE IN REAL USE CASES! THIS WAS MADE JUST FOR FUN!",
     author='Roy Nisimov',
