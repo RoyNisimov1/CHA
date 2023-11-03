@@ -5,74 +5,108 @@
 3. Verifying message integrity.
 4. Verifying passwords.
 
-# How to use
+# Installation
+## pip
 
-
-I made a main func where you can test, but the syntax is:
+``` 
+pip install cha-hashing
 ```
-CHAObject.RA(message).hexdigest(128)
+## cloning
+```
+git clone https://github.com/RoyNisimov1/CHA.git
 ```
 
+# how to use
+import CHA *
+``` 
+from CHA import Feistel64
+from CHA import CHAObject
+from CHA import HashMaker
+```
+or just 
+```
+from CHA import *
+```
 
 
 # How RA works
 ## Step One: Encipher
 The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** ord c each time. 
-
-                    for c in message:
-                for i in range(0, pow(ord(c), ord(c), len(shaffle_list))):
-                    first = shaffle_list.pop(0)
-                    shaffle_list.append(first)
-                if c in characters:
-                    index = characters.index(c)
-                    om.append(shaffle_list[index])
-                else:
-                    om.append(c)
+``` 
+for c in message:
+    for i in range(0, pow(ord(c), ord(c), len(shuffle_list))):
+        first = shuffle_list.pop(0)
+        shuffle_list.append(first)
+    if c in characters and c in shuffle_list:
+        index = characters.index(c)
+        om.append(shuffle_list[index])
+    else:
+        om.append(c)
+```
 
 ## Step Two: Padding
 This step adds padding to the cipher text, we also have an amount to shift at the end of it
 
-        bm = [format(ord(c), 'b') for c in om]
-        amount_to_shift = len(padding_list) - len(bm)
-        if amount_to_shift <= 0: amount_to_shift *= -1
-        shift_must = ord(om[0]) if len(om) > 0 else 153
-        amount_to_shift += shift_must
-        for i, b in enumerate(padding_list):
-            bm.append(b)
+``` 
+bm = [format(ord(c), 'b') for c in om]
+amount_to_shift = len(padding_list) - len(bm)
+if amount_to_shift <= 0: amount_to_shift *= -1
+shift_must = ord(om[0]) if len(om) > 0 else shift_must_if_om0
+amount_to_shift += shift_must
+for i, b in enumerate(padding_list):
+    bm.append(b)
+```
 
 ## Step Three: Keying
 We make a copy of the text list (bm in here) and shift everything by the amount to shift
 
-        key = bm.copy()
-        for i in range(0, amount_to_shift):
-            first = key.pop(0)
-            key.append(first)
-        if key == bm:
-            first = key.pop(0)
-            key.append(first)
+``` 
+key = bm.copy()
+for i in range(0, amount_to_shift):
+    if times % rev_every == 0:
+        key.reverse()
+    first = key.pop(0)
+    key.append(first)
+if key == bm:
+    first = key.pop(0)
+    key.append(first)
+```
 
 ## Step Four: XORing
 In this step we XOR the ciphertext with our key
 
-        bm = list(int(c, 2) for c in bm)
-        key = list(int(c, 2) for c in key)
-        xored = []
-        for i in range(len(bm)):
-            xored.append(bm[i] ^ key[i])
-        s_xored = [str(n) for n in xored]
+```
+bm = list(int(c, 2) for c in bm)
+key = list(int(c, 2) for c in key)
+xored = []
+for i in range(len(bm)):
+    xored.append(bm[i] ^ key[i])
+s_xored = [str(n) for n in xored]
+s = ''
+for string in s_xored:
+    s += string.strip("-")
+s = s[0:size_limit_of_0]
+```
 ## Step Five: Repeat and shift padding
 We shift the padding by ```amount_to_shift**amount_to_shift % len(padding_list)```
 
 This process repeat 16 times using the "s" as the new message
 
+``` 
+for i in range(pow(amount_to_shift, amount_to_shift, len(padding_list))):
+    first = padding_list.pop(0)
+    if times % rev_every == 0:
+        padding_list.reverse()
+    padding_list.append(first)
+message = s
+```
+
 ## Step Six: Final
 We join this large list, turn that into an int, and then we return a CHAObject object of it
-
-        s = ''
-        for string in s_xored:
-            s += string.strip("-")
-        last_int = int(s)
-        return CHAObject(last_int)
+``` 
+last_int = int(s)
+return CHAObject(last_int)
+```
 
 
 # CHA - Customizable Hashing Algorithm

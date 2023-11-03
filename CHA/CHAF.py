@@ -1,6 +1,6 @@
 import json
 
-from Hashing_Algorithms import *
+from .Hashing_Algorithms import *
 import ast
 class Block:
     def __init__(self, value: str):
