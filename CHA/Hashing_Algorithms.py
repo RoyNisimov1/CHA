@@ -62,7 +62,6 @@ class CHAObject:
     def CHA(message: str, padding: str, shuffle_list: list, size_limit_of_0: int, rep: int, char_set: str, shift_must_if_om0: int, rev_every: int):
         """
         Customizable-Hashing-Algorithm
-        CHA is like HAS but customizable
 
         :param rev_every: reverse the lists every
         :param shift_must_if_om0: what's shift must is
