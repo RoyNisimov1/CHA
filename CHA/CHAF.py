@@ -1,6 +1,7 @@
 import json
 
 from .Hashing_Algorithms import *
+import random
 import ast
 class Block:
     def __init__(self, value: str):
