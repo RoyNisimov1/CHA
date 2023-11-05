@@ -82,7 +82,7 @@ class Feistel64:
         return CHAObject.RAB(b)
 
     @staticmethod
-    def fRAB_With_complex_nonce(nonce):
+    def fRAB_with_nonce(nonce):
         def repeated_key_xor(plain_text, key):
             pt = plain_text
             len_key = len(key)
@@ -95,11 +95,9 @@ class Feistel64:
         nonce_list = nonce.split()
         og_list = nonce_list.copy()
         def fnonce(b):
-            first = nonce_list.pop(0)
-            nonce_list.append(first)
-            b = b + b"".join(nonce_list)
+            b = b + nonce
             chaO = CHAObject.RAB(b)
-            return repeated_key_xor(chaO, b"".join(nonce_list))
+            return repeated_key_xor(chaO, nonce)
         return fnonce
 
 if __name__ == '__main__':
