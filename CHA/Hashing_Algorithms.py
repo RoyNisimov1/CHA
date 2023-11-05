@@ -79,22 +79,22 @@ class CHAObject:
         padding_list = padding.split(" ")
         if len(padding_list) == 0: raise ValueError("Padding can not be empty!")
 
-        def shuffle(l: list):
-            l = l.copy()
-            to_append_size = l[0]
+        def shuffle(to_shuffle_list: list):
+            to_shuffle_list = to_shuffle_list.copy()
+            to_append_size = to_shuffle_list[0]
             a = []
-            for i in range(to_append_size % len(l)):
-                a.append(l.pop(0))
-            l.reverse()
-            for i in a:
-                l.append(i)
+            for i1 in range(to_append_size % len(to_shuffle_list)):
+                a.append(to_shuffle_list.pop(0))
+            to_shuffle_list.reverse()
+            for i2 in a:
+                to_shuffle_list.append(i2)
             e = []
-            for i, c in enumerate(l):
-                if i % 2 == 0:
-                    e.append(l.pop(i))
-            for i in e:
-                l.append(i)
-            return l
+            for i3, ch in enumerate(to_shuffle_list):
+                if i3 % 2 == 0:
+                    e.append(to_shuffle_list.pop(i3))
+            for i4 in e:
+                to_shuffle_list.append(i4)
+            return to_shuffle_list
         s = ''
         for times in range(rep):
             om = []

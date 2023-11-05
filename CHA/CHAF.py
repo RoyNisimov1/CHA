@@ -77,6 +77,31 @@ class Feistel64:
                 ra1.append(Feistel64.decrypt(e, num_of_rounds, func))
             return b''.join(ra1)
 
+    @staticmethod
+    def fRAB(b):
+        return CHAObject.RAB(b)
+
+    @staticmethod
+    def fRAB_With_complex_nonce(nonce):
+        def repeated_key_xor(plain_text, key):
+            pt = plain_text
+            len_key = len(key)
+            encoded = []
+
+            for i in range(0, len(pt)):
+                encoded.append(pt[i] ^ key[i % len_key])
+            return bytes(encoded)
+
+        nonce_list = nonce.split()
+        og_list = nonce_list.copy()
+        def fnonce(b):
+            first = nonce_list.pop(0)
+            nonce_list.append(first)
+            b = b + b"".join(nonce_list)
+            chaO = CHAObject.RAB(b)
+            return repeated_key_xor(chaO, b"".join(nonce_list))
+        return fnonce
+
 if __name__ == '__main__':
     with open("Key.json", "r") as f:
         data = json.load(f)
