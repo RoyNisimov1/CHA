@@ -83,6 +83,12 @@ class CHAObject:
             for i in padding_list:
                 new_list.append(format(int(i), 'b'))
             padding_list = new_list.copy()
+        elif padding_in == 'h':
+            new_list = []
+            for i in padding_list:
+                new_list.append(format(int(i, 16), 'b'))
+            padding_list = new_list.copy()
+
 
         def shuffle(to_shuffle_list: list):
             to_shuffle_list = to_shuffle_list.copy()
