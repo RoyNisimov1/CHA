@@ -19,7 +19,7 @@ git clone https://github.com/RoyNisimov1/CHA.git
 # how to use
 import CHA *
 ``` 
-from CHA import Feistel64
+from CHA import FeistelN
 from CHA import CHAObject
 from CHA import HashMaker
 ```
@@ -139,7 +139,25 @@ Will preform some additional tasks with every time % $rev_every == 0
 # CHAB
 Like CHA but the message is in bytes
 
+# HMAC
+Syntax for hmac:
+```python
+from CHA import FeistelN
+from CHA import CHAFHMAC
+# our secret key:
 
+secret = b'test'
+# message
+msg = b'secret msg'
+# creating a hmac obj
+hmac_obj = CHAFHMAC(secret, func=FeistelN.fRAB_with_nonce(secret))
+hmac_obj.update(msg)
+# getting a mac
+mac = hmac_obj.hexdigest()
+print(mac)
+# verifying a mac
+print(hmac_obj.verify(mac))
+```
 
 # Creating your own algorithm using HashMaker
 
@@ -182,9 +200,9 @@ for example:
         padding, shuffle_list, size, rep, char_set, smio = CHAObject.get_RA_args()
         return CHAObject.CHAB(b,padding,shuffle_list, 128, 16, '', 153)
     s = input("Enter an input:\n").encode()
-    e = Feistel64.DE(s,  8, fCHA)
+    e = FeistelN().DE(s,  8, fCHA)
     print(e)
-    d = Feistel64.DE(e,  8,fCHA, 'd')
+    d = FeistelN().DE(e,  8,fCHA, 'd')
     print(d)
 ```
 
@@ -202,7 +220,7 @@ the function needs to return bytes, here we're using CHAB with the RA args.
 
 ## Call DE
 
-then the Feistel function uses 64 bits everytime, I configed the DE function on the Feistel64 class
+then the Feistel function uses 64 bits everytime, I configed the DE function on the FeistelN class
 to do this automatically.
 ### mode 'e'
 this will return a list of hexes

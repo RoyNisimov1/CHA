@@ -10,7 +10,9 @@ class Block:
     def get_value(self):
         return self.value
 
-class Feistel64:
+class FeistelN:
+    def __init__(self, n_bits=64):
+        self.n_bits = n_bits
 
     @staticmethod
     def repeated_key_xor(plain_text, key):
@@ -23,13 +25,13 @@ class Feistel64:
             encoded.append(pt[i] ^ key[i % len_key])
         return bytes(encoded)
 
-    @staticmethod
-    def encrypt(message, num_of_rounds: int, func) -> bytes:
 
-        if len(message) < 64:
-            message = message + b' ' * (64-len(message))
+    def encrypt(self, message, num_of_rounds: int, func) -> bytes:
 
-        block_len = 32
+        if len(message) < self.n_bits:
+            message = message + b' ' * (self.n_bits-len(message))
+
+        block_len = self.n_bits // 2
         blockA = Block(message[0:block_len])
         blockB = Block(message[block_len:])
 
@@ -41,20 +43,20 @@ class Feistel64:
 
         for i in range(num_of_rounds):
             temp_bit = func(blockB.get_value())
-            blockA = Block(Feistel64.repeated_key_xor(blockA.get_value(), temp_bit))
+            blockA = Block(FeistelN.repeated_key_xor(blockA.get_value(), temp_bit))
 
             blockA, blockB = swap(blockA, blockB)
 
         blockA, blockB = swap(blockA, blockB)
         return blockA.get_value() + blockB.get_value()
 
-    @staticmethod
-    def decrypt(message, num_of_rounds, func) -> bytes:
-        b = bytes.fromhex(message)
-        return Feistel64.encrypt(b, num_of_rounds, func)
 
-    @staticmethod
-    def DE(message, num_of_rounds, func, mode='e', inp='l'):
+    def decrypt(self,message, num_of_rounds, func) -> bytes:
+        b = bytes.fromhex(message)
+        return self.encrypt(b, num_of_rounds, func)
+
+
+    def DE(self, message, num_of_rounds, func, mode='e', inp='l'):
         mode = mode.lower()
         inp = inp.lower()
         if inp not in ['s', 'l']: raise Exception("inp needs to be l or s!")
@@ -63,18 +65,18 @@ class Feistel64:
             return [str1[i:i + n] for i in range(0, len(str1), n)]
         if mode == 'e':
             ra = []
-            ml = split_nth(message, 64)
+            ml = split_nth(message, self.n_bits)
             for i in ml:
-                ra.append(Feistel64.encrypt(i, num_of_rounds, func).hex())
+                ra.append(self.encrypt(i, num_of_rounds, func).hex())
             if inp == 'l':
                 return ra
             elif inp == 's':
                 return "".join(ra)
         elif mode == 'd':
             ra1 = []
-            if inp == 's': message = split_nth(message, 128)
+            if inp == 's': message = split_nth(message, self.n_bits*2)
             for e in message:
-                ra1.append(Feistel64.decrypt(e, num_of_rounds, func))
+                ra1.append(self.decrypt(e, num_of_rounds, func))
             return b''.join(ra1)
 
     @staticmethod
@@ -92,13 +94,66 @@ class Feistel64:
                 encoded.append(pt[i] ^ key[i % len_key])
             return bytes(encoded)
 
-        nonce_list = nonce.split()
-        og_list = nonce_list.copy()
         def fnonce(b):
             b = b + nonce
             chaO = CHAObject.RAB(b)
             return repeated_key_xor(chaO, nonce)
         return fnonce
+
+    @staticmethod
+    def fCHAB_with_nonce(nonce, padding, shuffle_list, slo0, rep, char_set, shift, rev):
+        def repeated_key_xor(plain_text, key):
+            pt = plain_text
+            len_key = len(key)
+            encoded = []
+
+            for i in range(0, len(pt)):
+                encoded.append(pt[i] ^ key[i % len_key])
+            return bytes(encoded)
+
+        def fnonce(b):
+            b = b + nonce
+            chaO = CHAObject.CHAB(b, padding, shuffle_list, slo0, rep, char_set, shift, rev)
+            return repeated_key_xor(chaO, nonce)
+
+        return fnonce
+
+
+class CHAFHMAC:
+    IPAD = b'\x36'
+    OPAD = b'\x5c'
+
+    def __init__(self, key: bytes, func, msg=b''):
+        self.k1, self.k2 = CHAFHMAC.make_keys(key)
+        self.func = func
+        self.msg = msg
+
+    @staticmethod
+    def make_keys(key):
+        def repeated_key_xor(plain_text, key):
+            pt = plain_text
+            len_key = len(key)
+            encoded = []
+
+            for i in range(0, len(pt)):
+                encoded.append(pt[i] ^ key[i % len_key])
+            return bytes(encoded)
+        k1 = repeated_key_xor(key, CHAFHMAC.IPAD)
+        k2 = repeated_key_xor(key, CHAFHMAC.OPAD)
+        return k1, k2
+
+    def update(self, message):
+        self.msg += message
+
+    def hexdigest(self):
+        first = self.func(self.k1 + self.msg)
+        second = self.func(self.k2 + first)
+        return second.hex()
+
+    def verify(self, mac):
+        return self.hexdigest() == mac
+
+
 
 if __name__ == '__main__':
     with open("Key.json", "r") as f:
@@ -134,15 +189,15 @@ if __name__ == '__main__':
         padding, shuffle_list, slo0, rep, char_set, shift, rev = get_args()
         s = input("Enter an input:\n").encode()
         inp = input('Provide and inp:\n')
-        e = Feistel64.DE(s,  rep, fCHA, "e", inp)
+        e = FeistelN(64).DE(s,  rep, fCHA, "e", inp)
         print(e)
-        d = Feistel64.DE(e,  rep, fCHA, 'd', inp)
+        d = FeistelN(64).DE(e,  rep, fCHA, 'd', inp)
         print(d.decode().strip())
     elif mode == '2':
         padding, shuffle_list, slo0, rep, char_set, shift, rev = get_args()
         s = input("Enter an input:\n").encode()
         inp = input('Provide and inp:\n')
-        e = Feistel64.DE(s, rep, fCHA, "e", inp)
+        e = FeistelN(64).DE(s, rep, fCHA, "e", inp)
         print(e)
     elif mode == '3':
 
@@ -150,7 +205,7 @@ if __name__ == '__main__':
         s = input("Enter an input:\n")
         inp = input('Provide and inp:\n')
         if len(inp) == 0: inp = 'l'
-        d = Feistel64.DE(s, rep, fCHA, "d", inp)
+        d = FeistelN(64).DE(s, rep, fCHA, "d", inp)
         print(d.decode().strip())
     elif mode == '4':
         save()
