@@ -140,7 +140,6 @@ class CHAFHMAC:
             return bytes(encoded)
         k1 = repeated_key_xor(key, CHAFHMAC.IPAD)
         k2 = repeated_key_xor(key, CHAFHMAC.OPAD)
-        print(f"{k1 = }\n{k2 = }")
         return k1, k2
 
     def update(self, message):
