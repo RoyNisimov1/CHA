@@ -152,7 +152,11 @@ class CHAFHMAC:
         return r
 
     def verify(self, mac):
-        return self.hexdigest() == mac
+        digest = list(self.hexdigest())
+        r = True
+        for i in range(len(digest)):
+            if digest[i] != list(mac)[i % len(mac)]: r = False
+        return r
 
 
 

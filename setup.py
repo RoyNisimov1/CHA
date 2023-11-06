@@ -5,7 +5,7 @@ with open("README.md", 'r') as f:
     LONG_DESC = f.read()
 setup(
     name="cha_hashing",
-    version="0.4.5.3",
+    version="0.4.5.6",
     author="Roy Nisimov",
     description=DESC,
     long_description_content_type="text/markdown",
