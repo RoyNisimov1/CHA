@@ -1,3 +1,8 @@
+# Notes
+This was made for fun and learning cryptography and python.
+Everything here is not for real use-cases.
+Keep in mind that the functions here are probably insecure. They went through 0 security checks.
+
 # Hashing use cases
 
 1. Detecting duplicated records.
@@ -10,10 +15,6 @@
 
 ``` 
 pip install cha-hashing
-```
-## cloning
-```
-git clone https://github.com/RoyNisimov1/CHA.git
 ```
 
 # how to use

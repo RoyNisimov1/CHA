@@ -63,6 +63,7 @@ class CHAObject:
         """
         Customizable-Hashing-Algorithm
 
+        :param padding_in: how does the pudding list gets interpreted
         :param rev_every: reverse the lists every
         :param shift_must_if_om0: what's shift must is
         :param message: The plaintext input
