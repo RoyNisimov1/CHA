@@ -230,6 +230,20 @@ will return the string
 
 [Feistel Cipher - Computerphile](https://www.youtube.com/watch?v=FGhj3CGxl8I)
 
+# BlackFrog
+This is an asymmetric encryption algorithm
+
+## Generate keys
+returns two keys, one public, one private
+
+## Encrypt
+
+Encrypts bytes with public key and returns cipher text as bytes
+
+## Decrypt
+
+Decrypt bytes with private key and returns message text as bytes
+
 # *_Notes_*:
 
 1. _Use the hexdigest function to get the value in hex_
