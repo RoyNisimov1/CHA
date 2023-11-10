@@ -1,6 +1,7 @@
 import random
 import sys
 import math
+import json
 class PrimeNumberGenerator:
     # Large Prime Generation for RSA
 
@@ -69,6 +70,15 @@ class BlackFrogKey:
 
     def __repr__(self):
         return f"{self.n = }\n{self.e = }\n{self.d = }\n"
+
+    def export(self):
+        data = {'n': self.n, 'e': self.e, 'd': self.d}
+        return json.dumps(data)
+
+    @staticmethod
+    def load(data):
+        d = json.loads(data)
+        return BlackFrogKey(d['n'], d['e'], d['d'])
 class BlackFrog:
     @staticmethod
     def generate_keys(n_bits):
@@ -76,16 +86,16 @@ class BlackFrog:
         while p == q:
             q = PrimeNumberGenerator.GeneratePrime(n_bits)
         n = p * q
-        e = random.randint(3, n - 1)
-        while math.gcd(e, n) != 1:
-            e = random.randint(3, n - 1)
-
+        e = (random.randint(3, n - 1))
+        while math.gcd(e, p) != 1:
+            e = (random.randint(3, n - 1))
         d = pow(e, -1, n)
-        return BlackFrogKey(n, e), BlackFrogKey(n, e, d)
-
+        N = random.randint(3, n - 2) * n
+        # d = pow(e, -1, n), n is public so the keys are worthless
+        return BlackFrogKey(N, e), BlackFrogKey(n, e, d)
 
     @staticmethod
-    def encrypt(key: BlackFrogKey, message:bytes):
+    def encrypt(key: BlackFrogKey, message: bytes):
         m = int.from_bytes(message, sys.byteorder)
         c = (m * key.e) % key.n
         c = c.to_bytes(c.bit_length(), sys.byteorder).rstrip(b'\x00')
@@ -98,4 +108,5 @@ class BlackFrog:
         m = (key.d * c) % key.n
         b = m.to_bytes(m.bit_length(), sys.byteorder)
         return b
+
 
