@@ -90,8 +90,7 @@ class BlackFrog:
         while math.gcd(e, p) != 1:
             e = (random.randint(3, n - 1))
         d = pow(e, -1, n)
-        N = random.randint(3, n - 2) * n
-        # d = pow(e, -1, n), n is public so the keys are worthless
+        N = random.randint(3, n - 2) * n * e * d
         return BlackFrogKey(N, e), BlackFrogKey(n, e, d)
 
     @staticmethod
