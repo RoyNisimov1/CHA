@@ -91,16 +91,18 @@ class BlackFrog:
             q = PrimeNumberGenerator.GeneratePrime(n_bits)
         n = p * q
         e = (random.randint(3, n - 1))
-        while math.gcd(e, p) != 1:
+        while math.gcd(e, n) != 1:
             e = (random.randint(3, n - 1))
         d = pow(e, -1, n)
-        r = random.randint(3, n-2)
-        N = n * e * r * d
+        r = random.randint(3, d-2)
+        N = n * r
         maxM = n-(r+d)
         if maxM < 0: maxM *= -1
-        verifier = n * e * r
-        newR = random.randint(3, n-2)
-        signer = newR * verifier
+
+        ran = list(range(2, 7))
+        r = random.randint(0, len(ran)-1)
+        verifier = n * ran[r]
+        signer = 2 * verifier
         return BlackFrogKey(N, e, maxM, verifier), BlackFrogKey(n, e, n, verifier, d, signer)
 
 
@@ -109,7 +111,7 @@ class BlackFrog:
         might_be_dec_wrong = False
         m = int.from_bytes(message, sys.byteorder)
         if m > key.maxM: might_be_dec_wrong = True
-        c = (m * key.e) % key.n
+        c = (m * pow(key.e, key.e, key.n)) % key.n
         c = c.to_bytes(c.bit_length(), sys.byteorder).rstrip(b'\x00')
         if return_might_be_dec_wrong:
             return c, might_be_dec_wrong
@@ -119,23 +121,6 @@ class BlackFrog:
     def decrypt(key: BlackFrogKey, c: bytes):
         assert key.d is not None
         c = int.from_bytes(c, sys.byteorder)
-        m = (key.d * c) % key.n
+        m = (pow(key.d, key.e, key.n) * c) % key.n
         b = m.to_bytes(m.bit_length(), sys.byteorder)
         return b
-
-    @staticmethod
-    def sign(key: BlackFrogKey, message: bytes):
-        assert key.d is not None
-        m = int.from_bytes(message, sys.byteorder)
-        sig = (key.d * m) % key.signer
-        b = sig.to_bytes(sig.bit_length(), sys.byteorder)
-        return b
-
-    @staticmethod
-    def verify(key: BlackFrogKey, sig: bytes, message: bytes):
-        s = int.from_bytes(sig, sys.byteorder)
-        m = (s * key.e) % key.verifier
-        mb = m.to_bytes(m.bit_length(), sys.byteorder).rstrip(b'\x00')
-        c = BlackFrog.encrypt(key, message)
-        return mb == c
-

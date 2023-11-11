@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
-DESC = 'A Hashing and encryption with Customizable Hashing Algorithm CHA, WARNING: DO NOT USE IN REAL USE CASES! THIS WAS MADE JUST FOR FUN!'
+DESC = 'A hashing and encryption with Customizable Hashing Algorithm CHA, WARNING: DO NOT USE IN REAL USE CASES! THIS WAS MADE JUST FOR FUN!'
 with open("README.md", 'r') as f:
     LONG_DESC = f.read()
 setup(
     name="cha_hashing",
-    version="0.4.6.1",
+    version="0.4.6.4",
     author="Roy Nisimov",
     description=DESC,
     long_description_content_type="text/markdown",
