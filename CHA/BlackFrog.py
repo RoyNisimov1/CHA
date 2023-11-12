@@ -92,7 +92,7 @@ class BlackFrog:
         while math.gcd(e, n) != 1:
             e = (random.randint(3, n - 1))
         d = pow(e, -1, n)
-        N = n
+        N = n * random.getrandbits(32) * e
 
         E = pow(e, e, N)
         D = pow(d, e, n)
@@ -117,20 +117,4 @@ class BlackFrog:
         b = m.to_bytes(m.bit_length(), sys.byteorder)
         return b
 
-    @staticmethod
-    def sign(key: BlackFrogKey, message: bytes):
-        assert key.D is not None
-        m = int.from_bytes(message, sys.byteorder)
-        sig = (key.D * m) % key.n
-        b = sig.to_bytes(sig.bit_length(), sys.byteorder)
-        return b
 
-    @staticmethod
-    def verify(key: BlackFrogKey, sig: bytes, message: bytes):
-        s = int.from_bytes(sig, sys.byteorder)
-        m = (s * key.E) % key.n
-        mb = m.to_bytes(m.bit_length(), sys.byteorder).rstrip(b'\x00')
-
-        print(m)
-        print(message)
-        return mb == message
