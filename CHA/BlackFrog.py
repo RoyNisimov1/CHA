@@ -86,9 +86,9 @@ class BlackFrog:
     def generate_keys(n_bits):
         n = PrimeNumberGenerator.GeneratePrime(n_bits)
 
-        e = (random.randint(3, n - 1))
+        e = PrimeNumberGenerator.GeneratePrime(n_bits - 8)
         while math.gcd(e, n) != 1:
-            e = (random.randint(3, n - 1))
+            e = PrimeNumberGenerator.GeneratePrime(n_bits - 8)
         d = pow(e, -1, n)
         N = n * e
 
