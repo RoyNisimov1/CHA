@@ -86,14 +86,15 @@ class BlackFrog:
     def generate_keys(n_bits):
         n = PrimeNumberGenerator.GeneratePrime(n_bits)
 
-        e = PrimeNumberGenerator.GeneratePrime(n_bits - 8)
-        while math.gcd(e, n) != 1:
-            e = PrimeNumberGenerator.GeneratePrime(n_bits - 8)
+        e = PrimeNumberGenerator.GeneratePrime(n_bits)
+        while math.gcd(e, n) != 1 and e >= n:
+            e = PrimeNumberGenerator.GeneratePrime(n_bits)
         d = pow(e, -1, n)
-        N = n * e
+        r = PrimeNumberGenerator.GeneratePrime(n_bits)
+        N = n * e * r
 
-        E = pow(e, e, N)
-        D = pow(d, e, n)
+        E = pow(e, d, N)
+        D = pow(d, d, n)
         return BlackFrogKey(N, E=E), BlackFrogKey(n, E=E, D=D)
 
     @staticmethod
