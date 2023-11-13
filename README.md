@@ -232,7 +232,30 @@ will return the string
 
 # BlackFrog
 This is an asymmetric encryption algorithm
+``` 
+Key generation:
+—---------------------------------------------------------------
 
+Let n = large prime number
+
+Pick e such that gcd(e,n) == 1 and e < n and e is prime
+d = e**-1 % n
+N = n * e * random
+E = e**d % N
+D = d**d % n
+
+Public key: {E,N}
+Private key: {n,d,e,D}
+
+Encryption:
+—---------------------------------------------------------------
+
+ciphertext = message*E % N
+
+Decryption:
+—---------------------------------------------------------------
+message = ciphertext*D % n
+```
 ## Generate keys
 returns two keys, one public, one private
 
@@ -243,6 +266,12 @@ Encrypts bytes with public key and returns cipher text as bytes
 ## Decrypt
 
 Decrypt bytes with private key and returns message text as bytes
+
+## Signing
+This uses RSA concepts
+## Verifying
+This uses RSA concepts
+
 
 # *_Notes_*:
 

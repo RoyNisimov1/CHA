@@ -63,27 +63,28 @@ class PrimeNumberGenerator:
 
 
 class BlackFrogKey:
-    def __init__(self, n, E=None, D=None):
+    def __init__(self, n, E=None,D=None, signN=None,signD=None, verE=None):
         self.n = n
         self.E = E
         self.D = D
+        self.signN = signN
+        self.signD = signD
+        self.verE = verE
 
     def export(self):
-        data = {'n': self.n, 'E': self.E, 'D': self.D}
+        data = {'n': self.n, 'E': self.E, 'D': self.D,'signN': self.signN,'signD': self.signD,'verE': self.verE}
         return json.dumps(data)
 
     @staticmethod
     def load(data):
         d = json.loads(data)
-        return BlackFrogKey(n=d['n'], E=d['E'], D=d['D'])
+        return BlackFrogKey(n=d['n'], E=d['E'], D=d['D'], signN=d['signN'], signD=d['signD'], verE=d['verE'])
 
     def __repr__(self):
         return f"{self.n = }\n{self.E = }\n{self.D = }\n"
-
-
 class BlackFrog:
     @staticmethod
-    def generate_keys(n_bits):
+    def generate_keys(n_bits, allow_sign=False):
         n = PrimeNumberGenerator.GeneratePrime(n_bits)
 
         e = PrimeNumberGenerator.GeneratePrime(n_bits)
@@ -92,10 +93,22 @@ class BlackFrog:
         d = pow(e, -1, n)
         r = PrimeNumberGenerator.GeneratePrime(n_bits)
         N = n * e * r
-
         E = pow(e, d, N)
         D = pow(d, d, n)
-        return BlackFrogKey(N, E=E), BlackFrogKey(n, E=E, D=D)
+
+        signN = None
+        signD = None
+        verE = None
+        if allow_sign:
+            r = PrimeNumberGenerator.GeneratePrime(n_bits)
+            signN = n * e * r
+            phi = (n-1)*(e-1)*(r-1)
+            verE = PrimeNumberGenerator.GeneratePrime(n_bits)
+            while math.gcd(verE, phi) != 1 and verE >= phi:
+                verE = PrimeNumberGenerator.GeneratePrime(n_bits)
+            signD = pow(verE, -1, phi)
+        return BlackFrogKey(N, E=E, signN=signN, verE=verE), BlackFrogKey(n, E=E, D=D, signN=signN, verE=verE, signD=signD)
+
 
     @staticmethod
     def encrypt(key: BlackFrogKey, message: bytes, return_might_be_dec_wrong=False):
@@ -115,5 +128,19 @@ class BlackFrog:
         m = (c * key.D) % key.n
         b = m.to_bytes(m.bit_length(), sys.byteorder)
         return b
+
+    @staticmethod
+    def sign(key: BlackFrogKey, message: bytes):
+        m = int.from_bytes(message, sys.byteorder)
+        s = pow(m, key.signD, key.signN)
+        sb = s.to_bytes(s.bit_length(), sys.byteorder)
+        return sb.rstrip(b"\x00")
+
+    @staticmethod
+    def verify(key: BlackFrogKey, sig: bytes, message: bytes):
+        m = int.from_bytes(message, sys.byteorder)
+        s = int.from_bytes(sig, sys.byteorder)
+        msg = pow(s, key.verE, key.signN)
+        return msg == m
 
 
