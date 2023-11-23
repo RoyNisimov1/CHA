@@ -1,4 +1,4 @@
-import random
+import secrets
 import sys
 import math
 import json
@@ -11,7 +11,7 @@ class PrimeNumberGenerator:
 
     @staticmethod
     def nBitRandom(n):
-        return random.randrange(2 ** (n - 1) + 1, 2 ** n - 1)
+        return secrets.randbits(n)
 
     @staticmethod
     def getLowLevelPrime(n):
@@ -47,7 +47,7 @@ class PrimeNumberGenerator:
         # Set number of trials here
         numberOfRabinTrials = 20
         for i in range(numberOfRabinTrials):
-            round_tester = random.randrange(2, mrc)
+            round_tester = secrets.SystemRandom().randint(2, mrc)
             if trialComposite(round_tester):
                 return False
         return True

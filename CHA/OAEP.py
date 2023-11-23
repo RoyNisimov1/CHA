@@ -1,6 +1,6 @@
 import hashlib
-import random
-import sys
+import secrets
+
 from .BlackFrog import *
 class OAEP:
     @staticmethod
@@ -22,7 +22,7 @@ class OAEP:
 
     @staticmethod
     def encrypt(msg, n, pub):
-        nonce = random.getrandbits(32)
+        nonce = secrets.randbits(32)
         nonce = nonce.to_bytes(32, sys.byteorder)
         oaep = OAEP.oaep_pad(msg, nonce)
         m_int = int.from_bytes(oaep, sys.byteorder)
@@ -43,7 +43,7 @@ class OAEP:
 
     @staticmethod
     def encrypt_BlackFrog(key: BlackFrogKey, msg: bytes):
-        nonce = random.getrandbits(32)
+        nonce = secrets.randbits(32)
         nonce = nonce.to_bytes(32, sys.byteorder)
         oaep = OAEP.oaep_pad(msg, nonce)
         oaep_int = int.from_bytes(oaep, sys.byteorder)
