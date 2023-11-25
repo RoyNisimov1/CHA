@@ -64,7 +64,7 @@ class BlackFrogKey:
         self.signD = signD
         self.verE = verE
 
-    def export(self, passcode=None):
+    def export(self, passcode=b''):
         data = {'n': b64encode(BlackFrogKey.itb(self.n)).decode(), 'E': b64encode(BlackFrogKey.itb(self.E)).decode(), 'D': b64encode(BlackFrogKey.itb(self.D)).decode(), 'signN': self.signN,'signD': self.signD,'verE': self.verE}
         d = json.dumps(data, indent=2)
         p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG KEY")
@@ -72,7 +72,7 @@ class BlackFrogKey:
 
 
     @staticmethod
-    def load(data, passcode=None):
+    def load(data, passcode=b''):
         data = PEM.import_PEM(data, passcode, b"BLACKFROG KEY")
         d = json.loads(data)
         return BlackFrogKey(n=BlackFrogKey.bti(b64decode(d['n'])), E=BlackFrogKey.bti(b64decode(d['E'])), D=BlackFrogKey.bti(b64decode(d['D'])), signN=d['signN'], signD=d['signD'], verE=d['verE'])
