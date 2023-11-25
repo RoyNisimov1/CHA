@@ -75,7 +75,7 @@ class BlackFrogKey:
     @staticmethod
     def itb(i: int):
         if i is None: return b"\x00"
-        return i.to_bytes(i.bit_length(), sys.byteorder)
+        return i.to_bytes(i.bit_length(), sys.byteorder).rstrip(b"\x00")
 
     @staticmethod
     def bti(b: bytes):
