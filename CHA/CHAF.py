@@ -81,7 +81,7 @@ class FeistelN:
         return CHAObject.RAB(b)
 
     @staticmethod
-    def fRAB_with_nonce(nonce):
+    def fRAB_with_nonce(nonce, padding=None, shuffle_list=None, size=None, rep=None, char_set=None, smio=None, rev=None):
         def repeated_key_xor(plain_text, key):
             pt = plain_text
             len_key = len(key)
@@ -93,7 +93,7 @@ class FeistelN:
 
         def fnonce(b):
             b = b + nonce
-            chaO = CHAObject.RAB(b)
+            chaO = CHAObject.Better_RAB_Caller(b, padding, shuffle_list, size, rep, char_set, smio, rev)
             return repeated_key_xor(chaO, nonce)
         return fnonce
 

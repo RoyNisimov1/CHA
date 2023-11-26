@@ -175,6 +175,18 @@ class CHAObject:
         padding, shuffle_list, size, rep, char_set, smio, rev = CHAObject.get_RA_args()
         return CHAObject.CHAB(message, padding, shuffle_list, size, rep, char_set, smio, rev)
 
+    @staticmethod
+    def Better_RAB_Caller(message: bytes, padding=None, shuffle_list=None, size=None, rep=None, char_set=None, smio=None, rev=None):
+        padding1, shuffle_list1, size1, rep1, char_set1, smio1, rev1 = CHAObject.get_RA_args()
+        if padding: padding1 = padding
+        if shuffle_list: shuffle_list1 = shuffle_list
+        if size: size1 = size
+        if rep: rep1 = rep
+        if char_set: char_set1 = char_set
+        if smio: smio1 = smio
+        if rev: rev1 = rev
+        return CHAObject.CHAB(message, padding1, shuffle_list1, size1, rep1, char_set1, smio1, rev1)
+
 class HashMaker:
     @staticmethod
     def RandomShaffle(charset):
