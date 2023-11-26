@@ -73,7 +73,7 @@ class BlackFrogKey:
 
     @staticmethod
     def load(data, passcode=b''):
-        data = PEM.import_PEM(data, passcode, b"BLACKFROG KEY")
+        data = PEM.import_PEM(data, passcode)
         d = json.loads(data)
         return BlackFrogKey(n=BlackFrogKey.bti(b64decode(d['n'])), E=BlackFrogKey.bti(b64decode(d['E'])), D=BlackFrogKey.bti(b64decode(d['D'])), signN=d['signN'], signD=d['signD'], verE=d['verE'])
 
