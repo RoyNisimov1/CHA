@@ -72,7 +72,8 @@ class BlackFrogKey:
         e = self.signD == other.signD
         f = self.verE == other.verE
         return a and b and c and d and e and f
-    def export(self, passcode=b''):
+
+    def export(self, passcode=b'', n=64):
         data = {
             'n': b64encode(BlackFrogKey.itb(self.n)).decode(),
             'E': b64encode(BlackFrogKey.itb(self.E)).decode(),
@@ -82,9 +83,9 @@ class BlackFrogKey:
             'verE': b64encode(BlackFrogKey.itb(self.verE)).decode()}
         d = json.dumps(data, indent=2)
         if self.D:
-            p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG PRIVATE KEY")
+            p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG PRIVATE KEY", n=n)
         else:
-            p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG PRIVATE KEY")
+            p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG PUBLIC KEY", n=n)
         return p
 
 
