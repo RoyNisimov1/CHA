@@ -56,7 +56,7 @@ class PrimeNumberGenerator:
 
 
 class BlackFrogKey:
-    def __init__(self, n, E=None,D=None, signN=None,signD=None, verE=None):
+    def __init__(self, n, E=None, D=None, signN=None,signD=None, verE=None):
         self.n = n
         self.E = E
         self.D = D
@@ -64,18 +64,40 @@ class BlackFrogKey:
         self.signD = signD
         self.verE = verE
 
+    def __eq__(self, other):
+        a = self.n == other.n
+        b = self.E == other.E
+        c = self.D == other.D
+        d = self.signN == other.signN
+        e = self.signD == other.signD
+        f = self.verE == other.verE
+        return a and b and c and d and e and f
     def export(self, passcode=b''):
-        data = {'n': b64encode(BlackFrogKey.itb(self.n)).decode(), 'E': b64encode(BlackFrogKey.itb(self.E)).decode(), 'D': b64encode(BlackFrogKey.itb(self.D)).decode(), 'signN': self.signN,'signD': self.signD,'verE': self.verE}
+        data = {
+            'n': b64encode(BlackFrogKey.itb(self.n)).decode(),
+            'E': b64encode(BlackFrogKey.itb(self.E)).decode(),
+            'D': b64encode(BlackFrogKey.itb(self.D)).decode(),
+            'signN': b64encode(BlackFrogKey.itb(self.signN)).decode(),
+            'signD': b64encode(BlackFrogKey.itb(self.signD)).decode(),
+            'verE': b64encode(BlackFrogKey.itb(self.verE)).decode()}
         d = json.dumps(data, indent=2)
-        p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG KEY")
+        if self.D:
+            p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG PRIVATE KEY")
+        else:
+            p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG PRIVATE KEY")
         return p
 
 
     @staticmethod
     def load(data, passcode=b''):
         data = PEM.import_PEM(data, passcode)
-        d = json.loads(data)
-        return BlackFrogKey(n=BlackFrogKey.bti(b64decode(d['n'])), E=BlackFrogKey.bti(b64decode(d['E'])), D=BlackFrogKey.bti(b64decode(d['D'])), signN=d['signN'], signD=d['signD'], verE=d['verE'])
+        d: dict = json.loads(data)
+        de = {key: BlackFrogKey.bti(b64decode(d[key])) for key in d.keys()}
+        if de['D'] == 0: de['D'] = None
+        if de['signD'] == 0: de['signD'] = None
+        if de['verE'] == 0: de['verE'] = None
+        if de['signN'] == 0: de['signN'] = None
+        return BlackFrogKey(n=de['n'], E=de['E'], D=de['D'], signN=de['signN'], signD=de['signD'], verE=de['verE'])
 
     @staticmethod
     def itb(i: int):
@@ -88,19 +110,22 @@ class BlackFrogKey:
         return int.from_bytes(b, sys.byteorder)
 
     def __repr__(self):
-        return f"{self.n = }\n{self.E = }\n{self.D = }\n"
+        return f"{self.n = }\n{self.E = }\n{self.D = }\n{self.signN = }\n{self.signD = }\n{self.verE = }"
 class BlackFrog:
     @staticmethod
     def generate_keys(n_bits, allow_sign=False):
         n = PrimeNumberGenerator.GeneratePrime(n_bits)
 
-        e = PrimeNumberGenerator.GeneratePrime(n_bits)
-        while math.gcd(e, n) != 1 and e >= n:
-            e = PrimeNumberGenerator.GeneratePrime(n_bits)
+        e = secrets.randbits(n_bits)
+        while math.gcd(e, n) != 1:
+            e = secrets.randbits(n_bits)
         d = pow(e, -1, n)
-        r = PrimeNumberGenerator.GeneratePrime(n_bits)
+        r = secrets.randbits(n_bits)
         N = n * e * r
+
         E = pow(e, d, N)
+        if math.gcd(E, N) == e:
+            return BlackFrog.generate_keys(n_bits, allow_sign)
         D = pow(d, d, n)
 
         signN = None
