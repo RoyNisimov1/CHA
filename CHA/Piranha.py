@@ -25,7 +25,7 @@ class Piranha:
         self.mode = mode
         if mode == Piranha.GCM or mode == Piranha.CBC:
             if 'iv' not in kwargs.keys():
-                self.iv = secrets.token_urlsafe(16).encode()
+                self.iv = secrets.token_hex(9)[:16].encode()
             else:
                 self.iv = kwargs['iv']
         self.args = args

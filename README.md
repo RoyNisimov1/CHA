@@ -283,60 +283,32 @@ Right now the available modes are:
 * GCM
 
 ``` 
-key = b"super secret key"
-msg = b'Test message'
-# EBC
-cipher = Piranha(key, Piranha.EBC)
-c = cipher.encrypt(msg)
-print(c)
-cipher = Piranha(key, Piranha.EBC)
-m = cipher.decrypt(c)
-print(m)
+    key = b"super secret key"
+    msg = b'Test message'
+    # EBC
+    cipher = Piranha(key, Piranha.EBC)
+    c = cipher.encrypt(msg)
+    print(c)
+    cipher = Piranha(key, Piranha.EBC)
+    m = cipher.decrypt(c)
+    print(m)
 
-# CBC
-cipher = Piranha(key, Piranha.CBC)
-paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
-c = cipher.encrypt(paddedMsg)
-print(c)
-cipher = Piranha(key, Piranha.CBC, iv=cipher.iv)
-m = Piranha.unpad(cipher.decrypt(c))
-print(m)
+    # CBC
+    cipher = Piranha(key, Piranha.CBC)
+    paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
+    c = cipher.encrypt(paddedMsg)
+    print(c)
+    cipher = Piranha(key, Piranha.CBC, iv=cipher.iv)
+    m = Piranha.unpad(cipher.decrypt(c))
+    print(m)
 
-# GCM
-cipher = Piranha(key, Piranha.GCM)
-paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
-c = cipher.encrypt(paddedMsg)
-print(c)
-cipher = Piranha(key, Piranha.GCM, iv=cipher.iv)
-m = Piranha.unpad(cipher.decrypt(c))
-key = b"super secret key"
-msg = b'Test message'
-# EBC
-cipher = Piranha(key, Piranha.EBC)
-c = cipher.encrypt(msg)
-print(c)
-cipher = Piranha(key, Piranha.EBC)
-m = cipher.decrypt(c)
-print(m)
-
-# CBC
-cipher = Piranha(key, Piranha.CBC)
-paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
-c = cipher.encrypt(paddedMsg)
-print(c)
-cipher = Piranha(key, Piranha.CBC, iv=cipher.iv)
-m = Piranha.unpad(cipher.decrypt(c))
-print(m)
-
-# GCM
-cipher = Piranha(key, Piranha.GCM)
-paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
-c = cipher.encrypt(paddedMsg)
-print(c)
-cipher = Piranha(key, Piranha.GCM, iv=cipher.iv)
-m = Piranha.unpad(cipher.decrypt(c))
-print(m)
-
+    # GCM
+    cipher = Piranha(key, Piranha.GCM)
+    paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
+    c = cipher.encrypt(paddedMsg)
+    print(c)
+    cipher = Piranha(key, Piranha.GCM, iv=cipher.iv)
+    m = Piranha.unpad(cipher.decrypt(c))
 ```
 
 
