@@ -1,4 +1,4 @@
-__all__ = ['FeistelN', 'CHAObject', 'HashMaker', 'CHAF', 'Hashing_Algorithms', 'BlackFrog', 'BlackFrogKey', "OAEP", "PEMFile", "PEM"]
+__all__ = ['FeistelN', 'CHAObject', 'HashMaker', 'CHAF', 'Hashing_Algorithms', 'BlackFrog', 'BlackFrogKey', "OAEP", "PEMFile", "PEM", "Piranha"]
 from .CHAF import FeistelN
 from .CHAF import CHAFHMAC
 from .Hashing_Algorithms import CHAObject
@@ -7,3 +7,4 @@ from .BlackFrog import BlackFrogKey
 from .BlackFrog import BlackFrog
 from .OAEP import OAEP
 from .PEMFile import PEM
+from .Piranha import Piranha

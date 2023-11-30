@@ -1,7 +1,9 @@
-# Notes
+# READ ME
 This was made for fun and learning cryptography and python.
 Everything here is not for real use-cases.
-Keep in mind that the functions here are probably insecure. They went through 0 security checks.
+Keep in mind that the functions here are probably insecure. 
+They went through 0 security checks, and were made without thinking of the security side of things.
+
 
 # Hashing use cases
 
@@ -19,10 +21,12 @@ pip install cha-hashing
 
 # how to use
 import CHA *
-``` 
+```python
 from CHA import FeistelN
 from CHA import CHAObject
 from CHA import HashMaker
+from CHA import Piranha
+from CHA import PEMFile
 ```
 or just 
 ```
@@ -267,22 +271,79 @@ Encrypts bytes with public key and returns cipher text as bytes
 
 Decrypt bytes with private key and returns message text as bytes
 
-## Signing
-This uses RSA concepts
-## Verifying
-This uses RSA concepts
+
+# Piranha
+I made this cipher using the RAB-Feistel network.
+
+I made this to learn about [modes of operation](https://www.youtube.com/watch?v=Rk0NIQfEXBA).
+
+Right now the available modes are:
+* ECB
+* CBC
+* GCM
+
+``` 
+key = b"super secret key"
+msg = b'Test message'
+# EBC
+cipher = Piranha(key, Piranha.EBC)
+c = cipher.encrypt(msg)
+print(c)
+cipher = Piranha(key, Piranha.EBC)
+m = cipher.decrypt(c)
+print(m)
+
+# CBC
+cipher = Piranha(key, Piranha.CBC)
+paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
+c = cipher.encrypt(paddedMsg)
+print(c)
+cipher = Piranha(key, Piranha.CBC, iv=cipher.iv)
+m = Piranha.unpad(cipher.decrypt(c))
+print(m)
+
+# GCM
+cipher = Piranha(key, Piranha.GCM)
+paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
+c = cipher.encrypt(paddedMsg)
+print(c)
+cipher = Piranha(key, Piranha.GCM, iv=cipher.iv)
+m = Piranha.unpad(cipher.decrypt(c))
+key = b"super secret key"
+msg = b'Test message'
+# EBC
+cipher = Piranha(key, Piranha.EBC)
+c = cipher.encrypt(msg)
+print(c)
+cipher = Piranha(key, Piranha.EBC)
+m = cipher.decrypt(c)
+print(m)
+
+# CBC
+cipher = Piranha(key, Piranha.CBC)
+paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
+c = cipher.encrypt(paddedMsg)
+print(c)
+cipher = Piranha(key, Piranha.CBC, iv=cipher.iv)
+m = Piranha.unpad(cipher.decrypt(c))
+print(m)
+
+# GCM
+cipher = Piranha(key, Piranha.GCM)
+paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
+c = cipher.encrypt(paddedMsg)
+print(c)
+cipher = Piranha(key, Piranha.GCM, iv=cipher.iv)
+m = Piranha.unpad(cipher.decrypt(c))
+print(m)
+
+```
+
 
 
 # *_Notes_*:
 
-1. _Use the hexdigest function to get the value in hex_
-
-2. *THIS HASH FUNCTION IS PROBABLY NOT THE SAFEST!*
-
-3. I made it because I was bored, so please use something like Argon2 or Sha512 for real use cases.
-
-4. Also, there might already be a similar hashing function that I don't know of
-
-5. In the HashMaker there is a chance that some padding or shuffle_key have a backdoor in them (Though not probable). 
+<font color=red size=10>**This is insecure! I made everything for fun and learning! Do not use in real usecases**
+</font>
 
 PS: I know my code looks bad
