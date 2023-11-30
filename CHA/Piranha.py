@@ -4,7 +4,7 @@ from .CHAF import *
 import secrets
 
 class Piranha:
-    EBC = 0
+    ECB = 0
     CBC = 1
     GCM = 2
 
@@ -31,9 +31,6 @@ class Piranha:
         self.args = args
         self.kwargs = kwargs
 
-    @staticmethod
-    def new(key, mode: int, *args, **kwargs):
-        return Piranha(key, mode, args, kwargs=kwargs)
 
     @staticmethod
     def split_nth(n: int, line: str):
@@ -63,7 +60,7 @@ class Piranha:
                 encrypted.append(xoredEncryptedNonce)
             out = [Piranha.repeated_key_xor(Piranha.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
             return b''.join(out)
-        if self.mode == Piranha.EBC:
+        if self.mode == Piranha.ECB:
             return FeistelN().DE(data, 8, FeistelN.fRAB_with_nonce(self.key, rep=2), 'e', 's').encode()
         if self.mode == Piranha.CBC:
             dataList = Piranha.split_nth(64, data)
@@ -79,7 +76,7 @@ class Piranha:
 
     def decrypt(self, cipher: bytes):
         if self.mode == Piranha.GCM: return self.encrypt(cipher)
-        if self.mode == Piranha.EBC:
+        if self.mode == Piranha.ECB:
             return FeistelN().DE(cipher.decode(), 8, FeistelN.fRAB_with_nonce(self.key, rep=2), 'd', 's').rstrip(b" ")
         if self.mode == Piranha.CBC:
             cipher = cipher.decode()
