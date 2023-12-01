@@ -280,7 +280,7 @@ I made this to learn about [modes of operation](https://www.youtube.com/watch?v=
 Right now the available modes are:
 * ECB
 * CBC
-* GCM
+* CTR
 
 ``` 
     key = b"super secret key"

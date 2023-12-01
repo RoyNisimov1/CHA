@@ -1,9 +1,7 @@
 import sys
-
-from .CHAF import *
 import secrets
-from .Modes import *
-class Piranha:
+
+class Modes:
     ECB = 0
     CBC = 1
     CTR = 2
@@ -23,7 +21,7 @@ class Piranha:
     def __init__(self, key, mode: int, *args, **kwargs):
         self.key = key
         self.mode = mode
-        if mode == Piranha.CTR or mode == Piranha.CBC:
+        if mode == Modes.CTR or mode == Modes.CBC:
             if 'iv' not in kwargs.keys():
                 self.iv = secrets.token_hex(9)[:16].encode()
             else:
@@ -46,49 +44,47 @@ class Piranha:
     def unpad(data: bytes):
         return data.rstrip(b" ")
 
-    def encrypt(self, data: bytes, func=None):
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=2)
-        if self.mode == Piranha.CTR:
-            dataList = Piranha.split_nth(64, data)
+    def encrypt(self, data: bytes, func):
+        if self.mode == Modes.CTR:
+            dataList = Modes.split_nth(64, data)
             times = len(dataList)
             encrypted = []
             nonce: bytes
             for i in range(times):
                 bytesI = i.to_bytes(i.bit_length(), sys.byteorder)
                 nonce = self.iv + bytesI
-                encryptedNonce = FeistelN().DE(nonce, 8, func, 'e', 's').encode()
-                xoredEncryptedNonce = Piranha.repeated_key_xor(encryptedNonce, self.iv)
+                encryptedNonce = func(nonce)
+                xoredEncryptedNonce = Modes.repeated_key_xor(encryptedNonce, self.iv)
                 encrypted.append(xoredEncryptedNonce)
-            out = [Piranha.repeated_key_xor(Piranha.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
+            out = [Modes.repeated_key_xor(Modes.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
             return b''.join(out)
-        if self.mode == Piranha.ECB:
-            return FeistelN().DE(data, 8, func, 'e', 's').encode()
-        if self.mode == Piranha.CBC:
-            dataList = Piranha.split_nth(64, data)
+        if self.mode == Modes.ECB:
+            return func(data)
+        if self.mode == Modes.CBC:
+            dataList = Modes.split_nth(64, data)
             times = len(dataList)
             encrypted = []
             nextXOR = self.iv
             for i in range(times):
-                xoredData = Piranha.repeated_key_xor(dataList[i], nextXOR)
-                encryptedData = FeistelN().DE(xoredData, 8, func, 'e', 's').encode()
+                xoredData = Modes.repeated_key_xor(dataList[i], nextXOR)
+                encryptedData = func(xoredData)
                 encrypted.append(encryptedData)
                 nextXOR = encryptedData
             return b''.join(encrypted)
 
-    def decrypt(self, cipher: bytes, func=None):
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=2)
-        if self.mode == Piranha.CTR: return self.encrypt(cipher, func)
-        if self.mode == Piranha.ECB:
-            return FeistelN().DE(cipher.decode(), 8, func, 'd', 's').rstrip(b" ")
-        if self.mode == Piranha.CBC:
+    def decrypt(self, cipher: bytes, func):
+        if self.mode == Modes.CTR: return self.encrypt(cipher, func)
+        if self.mode == Modes.ECB:
+            return func(cipher)
+        if self.mode == Modes.CBC:
             cipher = cipher.decode()
-            dataList = Piranha.split_nth(128, cipher)
+            dataList = Modes.split_nth(128, cipher)
             times = len(dataList)
             decrypted = []
             nextXOR = self.iv
             for i in range(times):
-                decryptedData = FeistelN().DE(dataList[i], 8, func, 'd', 's')
-                xored = Piranha.repeated_key_xor(decryptedData, nextXOR)
+                decryptedData = func(dataList[i])
+                xored = Modes.repeated_key_xor(decryptedData, nextXOR)
                 decrypted.append(xored)
                 nextXOR = dataList[i].encode()
             return b''.join(decrypted)
