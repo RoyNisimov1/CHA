@@ -10,7 +10,7 @@ class PEM:
     @staticmethod
     def export_PEM(b: bytes, passcode: bytes, marker: bytes, n=16):
         if not (len(passcode) == 0 or passcode is None):
-            cipher = Piranha(key=passcode, mode=Piranha.GCM)
+            cipher = Piranha(key=passcode, mode=Piranha.CTR)
             data = cipher.encrypt(Piranha.pad(b, Piranha.BlockSize))
             b = cipher.iv + data
         e = b64encode(b)
@@ -31,6 +31,6 @@ class PEM:
         if not (len(passcode) == 0 or passcode is None):
             iv = i[:16]
             data = i[16:]
-            cipher = Piranha(key=passcode, mode=Piranha.GCM, iv=iv)
+            cipher = Piranha(key=passcode, mode=Piranha.CTR, iv=iv)
             d = Piranha.unpad(cipher.decrypt(data))
         return d
