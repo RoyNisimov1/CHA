@@ -1,6 +1,6 @@
 from .CHAF import *
 from base64 import b64encode, b64decode
-
+from .Piranha import Piranha
 
 class PEM:
     @staticmethod
@@ -10,8 +10,9 @@ class PEM:
     @staticmethod
     def export_PEM(b: bytes, passcode: bytes, marker: bytes, n=16):
         if not (len(passcode) == 0 or passcode is None):
-            obj = FeistelN().DE(b, 8, FeistelN().fRAB_with_nonce(passcode, rep=2), 'e', 's')
-            b = bytes.fromhex(obj)
+            cipher = Piranha(key=passcode, mode=Piranha.GCM)
+            data = cipher.encrypt(Piranha.pad(b, Piranha.BlockSize))
+            b = cipher.iv + data
         e = b64encode(b)
         l = PEM.split_nth(n, e)
         out = b"----BEGIN " + marker + b"----\n"
@@ -26,8 +27,10 @@ class PEM:
         l.pop(0)
         l.pop(-1)
         i = b64decode(b''.join(l))
-        int_i = i.hex()
         d = i
         if not (len(passcode) == 0 or passcode is None):
-            d = FeistelN().DE(int_i, 8, FeistelN().fRAB_with_nonce(passcode, rep=2), 'd', 's').rstrip(b' ').replace(b"\n", b"")
+            iv = i[:16]
+            data = i[16:]
+            cipher = Piranha(key=passcode, mode=Piranha.GCM, iv=iv)
+            d = Piranha.unpad(cipher.decrypt(data))
         return d
