@@ -35,6 +35,25 @@ from CHA import *
 
 
 # How RA works
+## The shuffle algorithm
+```python
+def shuffle(to_shuffle_list: list):
+    to_shuffle_list = to_shuffle_list.copy()
+    to_append_size = to_shuffle_list[0]
+    a = []
+    for i1 in range(to_append_size % len(to_shuffle_list)):
+        a.append(to_shuffle_list.pop(0))
+    to_shuffle_list.reverse()
+    for i2 in a:
+        to_shuffle_list.append(i2)
+    e = []
+    for i3, ch in enumerate(to_shuffle_list):
+        if i3 % 2 == 0:
+            e.append(to_shuffle_list.pop(i3))
+    for i4 in e:
+        to_shuffle_list.append(i4)
+    return to_shuffle_list
+```
 ## Step One: Encipher
 The function enciphers each letter with a letter in the shuffle list if it exists there, then shifts the letters in the shuffle list by the ord of c ** ord c each time. 
 ``` 
@@ -42,75 +61,75 @@ for c in message:
     for i in range(0, pow(ord(c), ord(c), len(shuffle_list))):
         first = shuffle_list.pop(0)
         shuffle_list.append(first)
+    ord_shuffle_list = [ord(c) for c in shuffle_list]
+    shuffled = shuffle(ord_shuffle_list)
+    shuffle_list = [chr(c) for c in shuffled]
     if c in characters and c in shuffle_list:
         index = characters.index(c)
-        om.append(shuffle_list[index])
+        original_message.append(shuffle_list[index])
     else:
-        om.append(c)
+        original_message.append(c)
 ```
 
 ## Step Two: Padding
-This step adds padding to the cipher text, we also have an amount to shift at the end of it
 
 ``` 
-bm = [format(ord(c), 'b') for c in om]
-amount_to_shift = len(padding_list) - len(bm)
-if amount_to_shift <= 0: amount_to_shift *= -1
-shift_must = ord(om[0]) if len(om) > 0 else shift_must_if_om0
-amount_to_shift += shift_must
-for i, b in enumerate(padding_list):
-    bm.append(b)
+binary_formatted_message = [format(ord(c), 'b') for c in original_message]
+
+            amount_to_shift = len(padding_list) - len(binary_formatted_message)
+            if amount_to_shift <= 0: amount_to_shift *= -1
+            shift_must = ord(original_message[0]) if len(original_message) > 0 else shift_must_if_om0
+            amount_to_shift += shift_must
+            binary_formatted_message.extend(padding_list)
 ```
 
 ## Step Three: Keying
-We make a copy of the text list (bm in here) and shift everything by the amount to shift
 
 ``` 
-key = bm.copy()
-for i in range(0, amount_to_shift):
-    if times % rev_every == 0:
-        key.reverse()
-    first = key.pop(0)
-    key.append(first)
-if key == bm:
-    first = key.pop(0)
-    key.append(first)
+key = binary_formatted_message.copy()
+            for i in range(0, amount_to_shift):
+                if times % rev_every == 0:
+                    key.reverse()
+                first = key.pop(0)
+                key.append(first)
+            if key == binary_formatted_message:
+                first = key.pop(0)
+                key.append(first)
 ```
 
 ## Step Four: XORing
 In this step we XOR the ciphertext with our key
 
 ```
-bm = list(int(c, 2) for c in bm)
+binary_formatted_message = list(int(c, 2) for c in binary_formatted_message)
 key = list(int(c, 2) for c in key)
 xored = []
-for i in range(len(bm)):
-    xored.append(bm[i] ^ key[i])
-s_xored = [str(n) for n in xored]
-s = ''
-for string in s_xored:
-    s += string.strip("-")
-s = s[0:size_limit_of_0]
+for i in range(len(binary_formatted_message)):
+    xored.append(binary_formatted_message[i] ^ key[i])
 ```
 ## Step Five: Repeat and shift padding
-We shift the padding by ```amount_to_shift**amount_to_shift % len(padding_list)```
-
-This process repeat 16 times using the "s" as the new message
 
 ``` 
-for i in range(pow(amount_to_shift, amount_to_shift, len(padding_list))):
-    first = padding_list.pop(0)
-    if times % rev_every == 0:
-        padding_list.reverse()
-    padding_list.append(first)
-message = s
+binary_formatted_message = list(int(c, 2) for c in binary_formatted_message)
+key = list(int(c, 2) for c in key)
+xored = []
+for i in range(len(binary_formatted_message)):
+    xored.append(binary_formatted_message[i] ^ key[i])
 ```
 
 ## Step Six: Final
 We join this large list, turn that into an int, and then we return a CHAObject object of it
 ``` 
-last_int = int(s)
-return CHAObject(last_int)
+s_xored = [str(n) for n in xored]
+s = ''
+for string in s_xored:
+    s += string.strip("-")
+s = s[0:size_limit_of_0]
+for i in range(pow(amount_to_shift, amount_to_shift, len(padding_list))):
+    intL = [int(c, 2) for c in padding_list]
+    padding_list = shuffle(intL)
+    padding_list = [format(c, 'b') for c in padding_list]
+message = s
 ```
 
 
@@ -167,7 +186,7 @@ print(hmac_obj.verify(mac))
 # Creating your own algorithm using HashMaker
 
 ## RandomShaffle
-This function will help you make your own random shuffled charset (```random.shuffle(letters)``` but with built-in langs)
+This function will help you make your own random shuffled charset (```secrets.SystemRandom().shuffle(letters)``` but with built-in langs)
 returns a string
 
 ## RandomBits

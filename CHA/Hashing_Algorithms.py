@@ -1,7 +1,6 @@
 import string as st
 import hashlib
 import secrets
-import random
 class CHAObject:
     @staticmethod
     def get_RA_args():
@@ -109,39 +108,48 @@ class CHAObject:
                 to_shuffle_list.append(i4)
             return to_shuffle_list
         s = ''
+        # rep is the number of times this happens
         for times in range(rep):
-            om = []
-
+            original_message = []
+            # enciphers
             for c in message:
                 for i in range(0, pow(ord(c), ord(c), len(shuffle_list))):
                     first = shuffle_list.pop(0)
                     shuffle_list.append(first)
+                ord_shuffle_list = [ord(c) for c in shuffle_list]
+                shuffled = shuffle(ord_shuffle_list)
+                shuffle_list = [chr(c) for c in shuffled]
                 if c in characters and c in shuffle_list:
                     index = characters.index(c)
-                    om.append(shuffle_list[index])
+                    original_message.append(shuffle_list[index])
                 else:
-                    om.append(c)
-            bm = [format(ord(c), 'b') for c in om]
-            amount_to_shift = len(padding_list) - len(bm)
+                    original_message.append(c)
+            # pads
+            binary_formatted_message = [format(ord(c), 'b') for c in original_message]
+
+            amount_to_shift = len(padding_list) - len(binary_formatted_message)
             if amount_to_shift <= 0: amount_to_shift *= -1
-            shift_must = ord(om[0]) if len(om) > 0 else shift_must_if_om0
+            shift_must = ord(original_message[0]) if len(original_message) > 0 else shift_must_if_om0
             amount_to_shift += shift_must
-            for i, b in enumerate(padding_list):
-                bm.append(b)
-            key = bm.copy()
+            binary_formatted_message.extend(padding_list)
+
+            # keys and shuffles
+            key = binary_formatted_message.copy()
             for i in range(0, amount_to_shift):
                 if times % rev_every == 0:
                     key.reverse()
                 first = key.pop(0)
                 key.append(first)
-            if key == bm:
+            if key == binary_formatted_message:
                 first = key.pop(0)
                 key.append(first)
-            bm = list(int(c, 2) for c in bm)
+            # xors
+            binary_formatted_message = list(int(c, 2) for c in binary_formatted_message)
             key = list(int(c, 2) for c in key)
             xored = []
-            for i in range(len(bm)):
-                xored.append(bm[i] ^ key[i])
+            for i in range(len(binary_formatted_message)):
+                xored.append(binary_formatted_message[i] ^ key[i])
+            # final
             s_xored = [str(n) for n in xored]
             s = ''
             for string in s_xored:
@@ -214,11 +222,6 @@ class HashMaker:
     def get_CHA_args():
         padding = HashMaker.RandomBits(64)
         shuffle_key = HashMaker.RandomShaffle("")
-        print(f"""The needed syntax is this: 
-padding = "{padding}"
-shuffle_key = {shuffle_key}
-CHAObject.CHA($INSERT MESSAGE HERE, padding, shuffle_key, 128, $REP NUM HERE (500+ for more security), '')
-""")
         return padding, shuffle_key
 
 if __name__ == '__main__':
