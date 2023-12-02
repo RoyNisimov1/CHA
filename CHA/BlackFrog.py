@@ -83,7 +83,6 @@ class BlackFrogKey:
     @staticmethod
     def load(data, passcode=b''):
         data = PEM.import_PEM(data, passcode)
-        print(data)
         d: dict = json.loads(data)
         de = {key: BlackFrogKey.bti(b64decode(d[key])) for key in d.keys()}
         if de['D'] == 0: de['D'] = None
