@@ -91,7 +91,7 @@ class CHAObject:
             padding_list = new_list.copy()
 
 
-        def shuffle(to_shuffle_list: list):
+        def shuffle(to_shuffle_list: list, n=2):
             to_shuffle_list = to_shuffle_list.copy()
             to_append_size = to_shuffle_list[0]
             a = []
@@ -102,7 +102,7 @@ class CHAObject:
                 to_shuffle_list.append(i2)
             e = []
             for i3, ch in enumerate(to_shuffle_list):
-                if i3 % 2 == 0:
+                if i3 % (n+1) == 0:
                     e.append(to_shuffle_list.pop(i3))
             for i4 in e:
                 to_shuffle_list.append(i4)
@@ -117,7 +117,7 @@ class CHAObject:
                     first = shuffle_list.pop(0)
                     shuffle_list.append(first)
                 ord_shuffle_list = [ord(c) for c in shuffle_list]
-                shuffled = shuffle(ord_shuffle_list)
+                shuffled = shuffle(ord_shuffle_list, ord(c) % 10)
                 shuffle_list = [chr(c) for c in shuffled]
                 if c in characters and c in shuffle_list:
                     index = characters.index(c)
@@ -157,7 +157,7 @@ class CHAObject:
             s = s[0:size_limit_of_0]
             for i in range(pow(amount_to_shift, amount_to_shift, len(padding_list))):
                 intL = [int(c, 2) for c in padding_list]
-                padding_list = shuffle(intL)
+                padding_list = shuffle(intL, i%10)
                 padding_list = [format(c, 'b') for c in padding_list]
             message = s
         last_int = int(s)

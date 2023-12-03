@@ -59,7 +59,11 @@ class Modes:
             out = [Modes.repeated_key_xor(Modes.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
             return b''.join(out)
         if self.mode == Modes.ECB:
-            return func(data)
+            ra = []
+            ml = Modes.split_nth(data, 64)
+            for i in ml:
+                ra.append(func(i))
+            return b"".join(ra)
         if self.mode == Modes.CBC:
             dataList = Modes.split_nth(64, data)
             times = len(dataList)
@@ -75,7 +79,11 @@ class Modes:
     def decrypt(self, cipher: bytes, func):
         if self.mode == Modes.CTR: return self.encrypt(cipher, func)
         if self.mode == Modes.ECB:
-            return func(cipher)
+            ra1 = []
+            message = Modes.split_nth(cipher, 128)
+            for e in message:
+                ra1.append(func(e))
+            return b''.join(ra1)
         if self.mode == Modes.CBC:
             cipher = cipher.decode()
             dataList = Modes.split_nth(128, cipher)
