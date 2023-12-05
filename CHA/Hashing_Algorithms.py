@@ -3,7 +3,7 @@ import hashlib
 import secrets
 class CHAObject:
     @staticmethod
-    def get_RA_args():
+    def get_RA_args(f='b'):
         padding = "00001000 00110011 00110111 11100001 01011110 00000111 11010110 10001000 01101111 01001100 00010110 00010001 11100011 00010000 00011110 11101001 11001111 11010011 10111000 01001110 01011010 00101010 10000001 00101111 10011100 11000100 11011001 01100001 10111001 10101101 11011110 11000110 11001110 10101010 01110100 11111100 00100100 01011001 00010100 10001100 10001000 11100110 00001111 10010011 11001110 01111110 10011001 11001000 01101111 10000011 01101001 00110110 01001010 11010100 01110001 00101010 11010010 11111011 10011001 11010001 00001100 01110001 11011111 01010110"
         shuffle_key = ['\x0c', '«', '[', 'ل', '\x97', '=', 'Ô', "'", '\x02', 'Й', '·', '¦', '¾', '#', 'Ä', 'Ã', 'º',
                        'O', '¯', '\x92', '\x9f', '÷', 'Û', 'f', '¤', '~', 't', 'D', 'o', ',', 'ù', 'å', 'ج', 'Z', ')',
@@ -31,11 +31,12 @@ class CHAObject:
                        'O', ']', '=', 'Ъ', 'В', '\x12', '\x9a', ';', 'b', 'o', 'A', '!', 'У', '$', 'Ö', 'ح', 'R', 'Ь',
                        'Е', 'W', '¸']
 
-        size = 154
+        size = 155
         rep = 16
         char_set = ''
         smio = 153
         rev = 4
+        if f == 'n': padding = '8 51 55 225 94 7 214 136 111 76 22 17 227 16 30 233 207 211 184 78 90 42 129 47 156 196 217 97 185 173 222 198 206 170 116 252 36 89 20 140 136 230 15 147 206 126 153 200 111 131 105 54 74 212 113 42 210 251 153 209 12 113 223 86'
         return padding, shuffle_key, size, rep, char_set, smio, rev
 
     def __init__(self, value: int):
@@ -46,8 +47,9 @@ class CHAObject:
 
     def hexdigest(self, b=None):
         if b is None:
-            return hex(self.value).strip("0x")
-        return hex(self.value).strip("0x")[0:b]
+            d = self.digest(128)
+            return d.hex()
+        return self.digest(b).hex()
 
 
     def digest(self, num_bits=128):
@@ -175,8 +177,8 @@ class CHAObject:
 
     @staticmethod
     def RA(message: str):
-        padding, shuffle_list, size, rep, char_set, smio, rev = CHAObject.get_RA_args()
-        return CHAObject.CHA(message, padding, shuffle_list, size, rep, char_set, smio, rev)
+        padding, shuffle_list, size, rep, char_set, smio, rev = CHAObject.get_RA_args('n')
+        return CHAObject.CHA(message, padding, shuffle_list, size, rep, char_set, smio, rev, padding_in='n')
 
     @staticmethod
     def RAB(message: bytes):

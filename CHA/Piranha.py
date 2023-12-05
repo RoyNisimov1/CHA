@@ -49,28 +49,27 @@ class Piranha:
     def encrypt(self, data: bytes, func=None):
         if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=2)
         if self.mode == Piranha.CTR:
-            dataList = Piranha.split_nth(64, data)
+            dataList = Piranha.split_nth(self.BlockSize, data)
             times = len(dataList)
             encrypted = []
             nonce: bytes
             for i in range(times):
                 bytesI = i.to_bytes(i.bit_length(), sys.byteorder)
                 nonce = self.iv + bytesI
-                encryptedNonce = FeistelN().DE(nonce, 8, func, 'e', 's').encode()
-                xoredEncryptedNonce = Piranha.repeated_key_xor(encryptedNonce, self.iv)
-                encrypted.append(xoredEncryptedNonce)
+                encryptedNonce = FeistelN().DE(nonce, 8, func, 'e', 's')
+                encrypted.append(encryptedNonce)
             out = [Piranha.repeated_key_xor(Piranha.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
             return b''.join(out)
         if self.mode == Piranha.ECB:
-            return FeistelN().DE(data, 8, func, 'e', 's').encode()
+            return FeistelN().DE(data, 8, func, 'e', 's')
         if self.mode == Piranha.CBC:
-            dataList = Piranha.split_nth(64, data)
+            dataList = Piranha.split_nth(self.BlockSize, data)
             times = len(dataList)
             encrypted = []
             nextXOR = self.iv
             for i in range(times):
                 xoredData = Piranha.repeated_key_xor(dataList[i], nextXOR)
-                encryptedData = FeistelN().DE(xoredData, 8, func, 'e', 's').encode()
+                encryptedData = FeistelN().DE(xoredData, 8, func, 'e', 's')
                 encrypted.append(encryptedData)
                 nextXOR = encryptedData
             return b''.join(encrypted)
@@ -79,10 +78,10 @@ class Piranha:
         if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=2)
         if self.mode == Piranha.CTR: return self.encrypt(cipher, func)
         if self.mode == Piranha.ECB:
-            return FeistelN().DE(cipher.decode(), 8, func, 'd', 's').rstrip(b" ")
+            return FeistelN().DE(cipher, 8, func, 'd', 's')
         if self.mode == Piranha.CBC:
-            cipher = cipher.decode()
-            dataList = Piranha.split_nth(128, cipher)
+
+            dataList = Piranha.split_nth(self.BlockSize, cipher)
             times = len(dataList)
             decrypted = []
             nextXOR = self.iv
@@ -90,5 +89,5 @@ class Piranha:
                 decryptedData = FeistelN().DE(dataList[i], 8, func, 'd', 's')
                 xored = Piranha.repeated_key_xor(decryptedData, nextXOR)
                 decrypted.append(xored)
-                nextXOR = dataList[i].encode()
+                nextXOR = dataList[i]
             return b''.join(decrypted)

@@ -48,9 +48,9 @@ class FeistelN:
         return blockA.get_value() + blockB.get_value()
 
 
-    def decrypt(self,message, num_of_rounds, func) -> bytes:
-        b = bytes.fromhex(message)
-        return self.encrypt(b, num_of_rounds, func)
+    def decrypt(self, message, num_of_rounds, func) -> bytes:
+        # b = bytes.fromhex(message)
+        return self.encrypt(message, num_of_rounds, func)
 
 
     def DE(self, message, num_of_rounds, func, mode='e', inp='l'):
@@ -64,14 +64,14 @@ class FeistelN:
             ra = []
             ml = split_nth(message, self.n_bits)
             for i in ml:
-                ra.append(self.encrypt(i, num_of_rounds, func).hex())
+                ra.append(self.encrypt(i, num_of_rounds, func))
             if inp == 'l':
                 return ra
             elif inp == 's':
-                return "".join(ra)
+                return b"".join(ra)
         elif mode == 'd':
             ra1 = []
-            if inp == 's': message = split_nth(message, self.n_bits*2)
+            if inp == 's': message = split_nth(message, self.n_bits)
             for e in message:
                 ra1.append(self.decrypt(e, num_of_rounds, func))
             return b''.join(ra1)

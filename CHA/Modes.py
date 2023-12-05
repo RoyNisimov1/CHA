@@ -26,12 +26,16 @@ class Modes:
                 self.iv = secrets.token_hex(9)[:16].encode()
             else:
                 self.iv = kwargs['iv']
+            if 'BlockSize' not in kwargs.keys():
+                self.BlockSize = 64
+            else:
+                self.BlockSize = kwargs['BlockSize']
         self.args = args
         self.kwargs = kwargs
 
 
     @staticmethod
-    def split_nth(n: int, line: str):
+    def split_nth(n: int, line: str or bytes):
         return [line[i:i + n] for i in range(0, len(line), n)]
 
     @staticmethod
@@ -46,7 +50,7 @@ class Modes:
 
     def encrypt(self, data: bytes, func):
         if self.mode == Modes.CTR:
-            dataList = Modes.split_nth(64, data)
+            dataList = Modes.split_nth(self.BlockSize, data)
             times = len(dataList)
             encrypted = []
             nonce: bytes
@@ -54,24 +58,23 @@ class Modes:
                 bytesI = i.to_bytes(i.bit_length(), sys.byteorder)
                 nonce = self.iv + bytesI
                 encryptedNonce = func(nonce)
-                xoredEncryptedNonce = Modes.repeated_key_xor(encryptedNonce, self.iv)
-                encrypted.append(xoredEncryptedNonce)
+                encrypted.append(encryptedNonce)
             out = [Modes.repeated_key_xor(Modes.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
             return b''.join(out)
         if self.mode == Modes.ECB:
             ra = []
-            ml = Modes.split_nth(data, 64)
+            ml = Modes.split_nth(self.BlockSize, data)
             for i in ml:
-                ra.append(func(i))
+                ra.append(func(i, self.key))
             return b"".join(ra)
         if self.mode == Modes.CBC:
-            dataList = Modes.split_nth(64, data)
+            dataList = Modes.split_nth(self.BlockSize, data)
             times = len(dataList)
             encrypted = []
             nextXOR = self.iv
             for i in range(times):
                 xoredData = Modes.repeated_key_xor(dataList[i], nextXOR)
-                encryptedData = func(xoredData)
+                encryptedData = func(xoredData, self.key)
                 encrypted.append(encryptedData)
                 nextXOR = encryptedData
             return b''.join(encrypted)
@@ -80,19 +83,19 @@ class Modes:
         if self.mode == Modes.CTR: return self.encrypt(cipher, func)
         if self.mode == Modes.ECB:
             ra1 = []
-            message = Modes.split_nth(cipher, 128)
+            message = Modes.split_nth(self.BlockSize, cipher)
             for e in message:
-                ra1.append(func(e))
+                ra1.append(func(e, self.key))
             return b''.join(ra1)
         if self.mode == Modes.CBC:
-            cipher = cipher.decode()
-            dataList = Modes.split_nth(128, cipher)
+            cipher = cipher
+            dataList = Modes.split_nth(self.BlockSize, cipher)
             times = len(dataList)
             decrypted = []
             nextXOR = self.iv
             for i in range(times):
-                decryptedData = func(dataList[i])
+                decryptedData = func(dataList[i], self.key)
                 xored = Modes.repeated_key_xor(decryptedData, nextXOR)
                 decrypted.append(xored)
-                nextXOR = dataList[i].encode()
+                nextXOR = dataList[i]
             return b''.join(decrypted)
