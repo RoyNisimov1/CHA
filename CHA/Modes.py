@@ -1,6 +1,6 @@
 import sys
 import secrets
-
+from .Piranha import *
 class Modes:
     ECB = 0
     CBC = 1
@@ -38,15 +38,13 @@ class Modes:
     def split_nth(n: int, line: str or bytes):
         return [line[i:i + n] for i in range(0, len(line), n)]
 
-    @staticmethod
-    def pad(data: bytes, blockSize: int):
-        l = len(data)
-        to_add = blockSize - (l % blockSize)
-        return data + b' ' * to_add
+
+    def pad(self, data: bytes):
+        return PKCS7(self.BlockSize).pad(data)
 
     @staticmethod
-    def unpad(data: bytes):
-        return data.rstrip(b" ")
+    def unpad(self, data: bytes):
+        return PKCS7(self.BlockSize).unpad(data)
 
     def encrypt(self, data: bytes, func):
         if self.mode == Modes.CTR:
@@ -57,7 +55,7 @@ class Modes:
             for i in range(times):
                 bytesI = i.to_bytes(i.bit_length(), sys.byteorder)
                 nonce = self.iv + bytesI
-                encryptedNonce = func(nonce)
+                encryptedNonce = func(nonce, self.key)
                 encrypted.append(encryptedNonce)
             out = [Modes.repeated_key_xor(Modes.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
             return b''.join(out)

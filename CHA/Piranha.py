@@ -37,14 +37,14 @@ class Piranha:
         return [line[i:i + n] for i in range(0, len(line), n)]
 
     @staticmethod
-    def pad(data: bytes, blockSize: int):
-        l = len(data)
-        to_add = blockSize - (l % blockSize)
-        return data + b' ' * to_add
+    def pad(data: bytes, blockSize=None):
+        if blockSize is None: blockSize = Piranha.BlockSize
+        return PKCS7(blockSize).pad(data)
 
     @staticmethod
-    def unpad(data: bytes):
-        return data.rstrip(b" ")
+    def unpad(data: bytes, blockSize=None):
+        if blockSize is None: blockSize = Piranha.BlockSize
+        return PKCS7(blockSize).unpad(data)
 
     def encrypt(self, data: bytes, func=None):
         if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=2)
@@ -91,3 +91,26 @@ class Piranha:
                 decrypted.append(xored)
                 nextXOR = dataList[i]
             return b''.join(decrypted)
+class PKCS7(object):
+    def __init__(self, block_size):
+        self.block_size = block_size
+
+    def pad(self, string):
+        padding_number = self.block_size - len(string) % self.block_size
+        if padding_number == self.block_size:
+            return string
+        padding = chr(padding_number).encode() * padding_number
+        return string + padding
+
+    def unpad(self, string):
+        if not string: return string
+        if len(string) % self.block_size:
+            raise TypeError('string is not a multiple of the block size.')
+        padding_number = string[-1]
+        if padding_number >= self.block_size:
+            return string
+        else:
+            if all(padding_number == c for c in string[-padding_number:] ):
+                return string[0:-padding_number]
+            else:
+                return string
