@@ -62,6 +62,7 @@ class BlackFrogKey:
         self.D = D
 
     def __eq__(self, other):
+        if not isinstance(self, other): return False
         a = self.n == other.n
         b = self.E == other.E
         c = self.D == other.D
@@ -103,7 +104,7 @@ class BlackFrogKey:
 class BlackFrog:
     @staticmethod
     def generate_keys(n_bits):
-        n = PrimeNumberGenerator.GeneratePrime(n_bits)
+        n = secrets.randbits(n_bits)
 
         e = secrets.randbits(n_bits)
         while math.gcd(e, n) != 1:
@@ -137,19 +138,3 @@ class BlackFrog:
         m = (c * key.D) % key.n
         b = m.to_bytes(m.bit_length(), sys.byteorder)
         return b
-
-    @staticmethod
-    def sign(key: BlackFrogKey, message: bytes):
-        m = int.from_bytes(message, sys.byteorder)
-        s = pow(m, key.signD, key.signN)
-        sb = s.to_bytes(s.bit_length(), sys.byteorder)
-        return sb.rstrip(b"\x00")
-
-    @staticmethod
-    def verify(key: BlackFrogKey, sig: bytes, message: bytes):
-        m = int.from_bytes(message, sys.byteorder)
-        s = int.from_bytes(sig, sys.byteorder)
-        msg = pow(s, key.verE, key.signN)
-        return msg == m
-
-

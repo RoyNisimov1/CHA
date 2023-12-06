@@ -48,16 +48,17 @@ class Modes:
 
     def encrypt(self, data: bytes, func):
         if self.mode == Modes.CTR:
-            dataList = Modes.split_nth(self.BlockSize, data)
+            repUnit = 16
+            dataList = Piranha.split_nth(self.BlockSize, data)
             times = len(dataList)
-            encrypted = []
-            nonce: bytes
-            for i in range(times):
+            if times < repUnit: repUnit = times
+            encryptedIVs = []
+            for i in range(repUnit):
                 bytesI = i.to_bytes(i.bit_length(), sys.byteorder)
                 nonce = self.iv + bytesI
-                encryptedNonce = func(nonce, self.key)
-                encrypted.append(encryptedNonce)
-            out = [Modes.repeated_key_xor(Modes.repeated_key_xor(dataList[i], c), self.key) for i, c in enumerate(encrypted)]
+                iv = func(nonce, self.key)
+                encryptedIVs.append(iv)
+            out = [Piranha.repeated_key_xor(dataList[i % len(encryptedIVs)], c) for i, c in enumerate(encryptedIVs)]
             return b''.join(out)
         if self.mode == Modes.ECB:
             ra = []

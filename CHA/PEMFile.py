@@ -8,7 +8,7 @@ class PEM:
         return [line[i:i + n] for i in range(0, len(line), n)]
 
     @staticmethod
-    def export_PEM(b: bytes, passcode: bytes, marker: bytes, n=16):
+    def export_PEM(b: bytes, passcode: bytes, marker: bytes, n=64):
         if not (len(passcode) == 0 or passcode is None):
             cipher = Piranha(key=passcode, mode=Piranha.CTR)
             data = cipher.encrypt(Piranha.pad(b, Piranha.BlockSize))
