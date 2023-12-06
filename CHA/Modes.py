@@ -23,7 +23,7 @@ class Modes:
         self.mode = mode
         if mode == Modes.CTR or mode == Modes.CBC:
             if 'iv' not in kwargs.keys():
-                self.iv = secrets.token_hex(9)[:16].encode()
+                self.iv = secrets.token_bytes(16)
             else:
                 self.iv = kwargs['iv']
             if 'BlockSize' not in kwargs.keys():
@@ -49,7 +49,7 @@ class Modes:
     def encrypt(self, data: bytes, func):
         if self.mode == Modes.CTR:
             repUnit = 16
-            dataList = Piranha.split_nth(self.BlockSize, data)
+            dataList = Modes.split_nth(self.BlockSize, data)
             times = len(dataList)
             if times < repUnit: repUnit = times
             encryptedIVs = []
@@ -58,7 +58,7 @@ class Modes:
                 nonce = self.iv + bytesI
                 iv = func(nonce, self.key)
                 encryptedIVs.append(iv)
-            out = [Piranha.repeated_key_xor(dataList[i % len(encryptedIVs)], c) for i, c in enumerate(encryptedIVs)]
+            out = [Modes.repeated_key_xor(encryptedIVs[i % len(encryptedIVs)], c) for i, c in enumerate(dataList)]
             return b''.join(out)
         if self.mode == Modes.ECB:
             ra = []

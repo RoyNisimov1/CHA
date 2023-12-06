@@ -1,8 +1,8 @@
 import sys
-
 from .CHAF import *
 import secrets
 from .Modes import *
+
 class Piranha:
     ECB = 0
     CBC = 1
@@ -25,7 +25,7 @@ class Piranha:
         self.mode = mode
         if mode == Piranha.CTR or mode == Piranha.CBC:
             if 'iv' not in kwargs.keys():
-                self.iv = secrets.token_hex(9)[:16].encode()
+                self.iv = secrets.token_bytes(16)
             else:
                 self.iv = kwargs['iv']
         self.args = args
@@ -59,7 +59,7 @@ class Piranha:
                 nonce = self.iv + bytesI
                 iv = FeistelN().DE(nonce, 4, func, 'e', 's')
                 encryptedIVs.append(iv)
-            out = [Piranha.repeated_key_xor(dataList[i % len(encryptedIVs)], c) for i, c in enumerate(encryptedIVs)]
+            out = [Piranha.repeated_key_xor(encryptedIVs[i % len(encryptedIVs)], c) for i, c in enumerate(dataList)]
             return b''.join(out)
         if self.mode == Piranha.ECB:
             return FeistelN().DE(data, 4, func, 'e', 's')
@@ -111,7 +111,7 @@ class PKCS7(object):
         if padding_number >= self.block_size:
             return string
         else:
-            if all(padding_number == c for c in string[-padding_number:] ):
+            if all(padding_number == c for c in string[-padding_number:]):
                 return string[0:-padding_number]
             else:
                 return string
