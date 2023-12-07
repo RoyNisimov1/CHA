@@ -2,7 +2,7 @@ import sys
 from .CHAF import *
 import secrets
 from .Modes import *
-
+from .CommonAlgs import CommonAlgs
 class Piranha:
     ECB = 0
     CBC = 1
@@ -12,13 +12,7 @@ class Piranha:
 
     @staticmethod
     def repeated_key_xor(plain_text, key):
-        pt = plain_text
-        len_key = len(key)
-        encoded = []
-
-        for i in range(0, len(pt)):
-            encoded.append(pt[i] ^ key[i % len_key])
-        return bytes(encoded)
+        return CommonAlgs.repeated_key_xor(plain_text, key)
 
     def __init__(self, key, mode: int, *args, **kwargs):
         self.key = key
@@ -82,6 +76,7 @@ class Piranha:
             out = [Piranha.repeated_key_xor(Piranha.repeated_key_xor(encryptedIVs[i % len(encryptedIVs)], c), self.key) for i, c in enumerate(dataList)]
             return b''.join(out)
         if self.mode == Piranha.ECB:
+            data = Piranha.repeated_key_xor(data, self.key)
             return FeistelN().DE(data, 4, func, 'e', 's')
         if self.mode == Piranha.CBC:
             dataList = Piranha.split_nth(self.BlockSize, data)
@@ -93,15 +88,15 @@ class Piranha:
                 encryptedData = FeistelN().DE(xoredData, 4, func, 'e', 's')
                 encrypted.append(encryptedData)
                 nextXOR = encryptedData
-            return b''.join(encrypted)
+            return Piranha.repeated_key_xor(b''.join(encrypted), self.key)
 
     def decrypt(self, cipher: bytes, func=None):
         if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=1, rev=1)
         if self.mode == Piranha.CTR: return self.encrypt(cipher, func)
         if self.mode == Piranha.ECB:
-            return Piranha.unpad(FeistelN().DE(cipher, 4, func, 'd', 's'), Piranha.BlockSize)
+            return Piranha.unpad(Piranha.repeated_key_xor(FeistelN().DE(cipher, 4, func, 'd', 's'), self.key), Piranha.BlockSize)
         if self.mode == Piranha.CBC:
-
+            cipher = Piranha.repeated_key_xor(cipher, self.key)
             dataList = Piranha.split_nth(self.BlockSize, cipher)
             times = len(dataList)
             decrypted = []
@@ -111,7 +106,7 @@ class Piranha:
                 xored = Piranha.repeated_key_xor(decryptedData, nextXOR)
                 decrypted.append(xored)
                 nextXOR = dataList[i]
-            return Piranha.unpad(b''.join(decrypted))
+            return Piranha.unpad(b''.join(decrypted), Piranha.BlockSize)
 
 class PKCS7(object):
     def __init__(self, block_size):

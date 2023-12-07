@@ -170,9 +170,7 @@ class CHAObject:
              shift_must_if_om0: int, rev: int):
         mess = str(message)
         c = CHAObject.CHA(mess, padding, shuffle_list, size_limit_of_0, rep, char_set, shift_must_if_om0, rev)
-        return bytes(
-            str(c.value),
-            'utf-8')
+        return c.digest()
 
 
     @staticmethod

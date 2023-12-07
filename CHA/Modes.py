@@ -1,5 +1,6 @@
 import sys
 import secrets
+from .CommonAlgs import CommonAlgs
 from .Piranha import *
 class Modes:
     ECB = 0
@@ -10,13 +11,7 @@ class Modes:
 
     @staticmethod
     def repeated_key_xor(plain_text, key):
-        pt = plain_text
-        len_key = len(key)
-        encoded = []
-
-        for i in range(0, len(pt)):
-            encoded.append(pt[i] ^ key[i % len_key])
-        return bytes(encoded)
+        return CommonAlgs.repeated_key_xor(plain_text, key)
 
     def __init__(self, key, mode: int, *args, **kwargs):
         self.key = key

@@ -1,4 +1,4 @@
-
+from .CommonAlgs import CommonAlgs
 from .Hashing_Algorithms import *
 class Block:
     def __init__(self, value: str):
@@ -13,14 +13,7 @@ class FeistelN:
 
     @staticmethod
     def repeated_key_xor(plain_text, key):
-
-        pt = plain_text
-        len_key = len(key)
-        encoded = []
-
-        for i in range(0, len(pt)):
-            encoded.append(pt[i] ^ key[i % len_key])
-        return bytes(encoded)
+        return CommonAlgs.repeated_key_xor(plain_text, key)
 
 
     def encrypt(self, message, num_of_rounds: int, func) -> bytes:
