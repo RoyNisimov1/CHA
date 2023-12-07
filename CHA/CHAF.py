@@ -148,6 +148,12 @@ class CHAFHMAC:
         r = CHAObject(int(second.hex(), 16)).hexdigest(cha_hex_value)
         return r
 
+    def digest(self, cha_hex_value=128):
+        first = self.func(self.k1 + self.msg)
+        second = self.func(self.k2 + first)
+        r = CHAObject(int(second.hex(), 16)).digest(cha_hex_value)
+        return r
+
     def verify(self, mac):
         digest = list(self.hexdigest())
         r = True
