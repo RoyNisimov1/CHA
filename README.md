@@ -300,6 +300,7 @@ Right now the available modes are:
 * ECB
 * CBC
 * CTR
+* EAA (My Encrypt and Authenticate, not EAX)
 
 ``` 
     key = b"super secret key"
@@ -321,13 +322,22 @@ Right now the available modes are:
     m = Piranha.unpad(cipher.decrypt(c))
     print(m)
 
-    # GCM
-    cipher = Piranha(key, Piranha.GCM)
+    # CTR
+    cipher = Piranha(key, Piranha.CTR)
     paddedMsg = Piranha.pad(msg, Piranha.BlockSize)
     c = cipher.encrypt(paddedMsg)
     print(c)
-    cipher = Piranha(key, Piranha.GCM, iv=cipher.iv)
+    cipher = Piranha(key, Piranha.CTR, iv=cipher.iv)
     m = Piranha.unpad(cipher.decrypt(c))
+    
+    # EAA
+    key = b"key"
+    m = Piranha.pad(b'test')
+    cipher = Piranha(key, Piranha.EAA, data=m)
+    a = cipher.encrypt(m)
+    print(a)
+    cipher = Piranha(key, Piranha.EAA, iv=cipher.iv, data=a)
+    print(Piranha.unpad(cipher.decrypt(a)))
 ```
 
 
