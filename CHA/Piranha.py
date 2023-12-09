@@ -5,9 +5,10 @@ from .Modes import *
 from .CommonAlgs import CommonAlgs
 from .Padding import PKCS7
 class Piranha:
-    ECB = 0
-    CBC = 1
-    CTR = 2
+    ECB = Modes.ECB
+    CBC = Modes.CBC
+    CTR = Modes.CTR
+    EAA = 3
     BlockSize = 64
     _uses_IV = [CTR, CBC]
 
@@ -73,3 +74,19 @@ class Piranha:
         if cipher is None: cipher = self.mode.data
         return self.mode.decrypt(cipher, self.decryptionFunction)
 
+class ModesEAA(Modes, prefix=Piranha.EAA):
+    def encrypt(self, data: bytes, func, *args, **kwargs):
+        cipher = Piranha(self.key, Piranha.CTR, data=data, iv=self.iv)
+        d = cipher.encrypt()
+        hmac = cipher.HMAC()
+        return hmac + cipher.iv + d
+
+    def decrypt(self, cipher: bytes, func, *args, **kwargs):
+        hmac = cipher[:64]
+        iv = cipher[64:80]
+        data = cipher[80:]
+        cipher = Piranha(self.key, Piranha.CTR, data=data, iv=iv)
+        pt = cipher.decrypt(data)
+        v = cipher.verify(pt, hmac)
+        if not v: raise ValueError("HMACs don't match!")
+        return pt
