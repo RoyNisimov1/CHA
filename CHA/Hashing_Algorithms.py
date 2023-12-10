@@ -1,6 +1,7 @@
 import string as st
 import hashlib
 import secrets
+from .CommonAlgs import CommonAlgs
 class CHAObject:
     @staticmethod
     def get_RA_args(f='b'):
@@ -223,6 +224,76 @@ class HashMaker:
         padding = HashMaker.RandomBits(64)
         shuffle_key = HashMaker.RandomShaffle("")
         return padding, shuffle_key
+class Krhash:
+
+    @staticmethod
+    def repeated_key_xor(plain_text, key):
+        return CommonAlgs.repeated_key_xor(plain_text, key)
+
+    @staticmethod
+    def Krhash(m: bytes) -> bytes:
+        def shuffle(l: list) -> list:
+            l = l.copy()
+            for i in range(len(l)):
+                l[i] = (l[i] >> 2) * 7 & 9
+                if l[i] % (l[i] % 10 + 1) == 0:
+                    l[i] |= 5
+                else:
+                    l[i] |= l[i] & 21
+                l[i] %= 256
+            cut = len(l) // 2
+            a1 = l[:cut]
+            a2 = l[cut:]
+            a1.reverse()
+            a2.reverse()
+            a1.extend(a2)
+            out = [a ^ b for a in a1 for b in a1]
+            for i in range(len(l)):
+                if i % ((out[i] % 10) + 1) == 0:
+                    out[i] = ((out[i] << 17) | 7) & 21
+                out[i] |= l[i]
+                out[i] %= 256
+            return out
+
+        def shuffle1(to_shuffle_list: list, n=2):
+            def func(to_shuffle_list, n=2):
+                to_shuffle_list = to_shuffle_list.copy()
+                to_append_size = to_shuffle_list[0]
+                a = []
+                for i1 in range(to_append_size % len(to_shuffle_list)):
+                    a.append(to_shuffle_list.pop(0))
+                to_shuffle_list.reverse()
+                for i2 in a:
+                    to_shuffle_list.append(i2)
+                e = []
+                for i3, ch in enumerate(to_shuffle_list):
+                    if i3 % (n+1) == 0:
+                        e.append(to_shuffle_list.pop(i3))
+                for i4 in e:
+                    to_shuffle_list.append(i4)
+                return to_shuffle_list
+            f = func(to_shuffle_list, 3)
+            l = b"".join([chr(c).encode() for c in f])
+            return l
+
+        for i in range(16):
+            m = m + b"\x01"
+            p = ((Krhash.repeated_key_xor(m, b"Padding key")[-1] | 21) & pow(2, 21, 256) + 1) % 256
+            m += bytes(p) * (64-(len(m) % 64))
+            m = m[:64]
+            out = shuffle(list(m))
+            rev = out.copy()
+            rev.reverse()
+            first_xor = Krhash.repeated_key_xor(out, rev)
+            rev_m = list(m)
+            rev_m.reverse()
+            rev_m = shuffle(rev_m)
+            second_xor = Krhash.repeated_key_xor(m, rev_m)
+            m = Krhash.repeated_key_xor(first_xor, second_xor)[:64]
+            m = shuffle1(list(m))
+        s1 = shuffle1(list(m)[:7])[:16]
+        s2 = shuffle1(list(m)[:16])[:8]
+        return Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
 
 if __name__ == '__main__':
     while True:

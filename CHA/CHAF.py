@@ -76,13 +76,7 @@ class FeistelN:
     @staticmethod
     def fRAB_with_nonce(nonce, padding=None, shuffle_list=None, size=None, rep=None, char_set=None, smio=None, rev=None):
         def repeated_key_xor(plain_text, key):
-            pt = plain_text
-            len_key = len(key)
-            encoded = []
-
-            for i in range(0, len(pt)):
-                encoded.append(pt[i] ^ key[i % len_key])
-            return bytes(encoded)
+            return CommonAlgs.repeated_key_xor(plain_text, key)
 
         def fnonce(b):
             b = b + nonce
@@ -91,15 +85,21 @@ class FeistelN:
         return fnonce
 
     @staticmethod
+    def fKRHASH_with_nonce(nonce):
+        def repeated_key_xor(plain_text, key):
+            return CommonAlgs.repeated_key_xor(plain_text, key)
+
+        def fnonce(b):
+            b = b + nonce
+            chaO = Krhash.Krhash(b)
+            return repeated_key_xor(chaO, nonce)
+
+        return fnonce
+
+    @staticmethod
     def fCHAB_with_nonce(nonce, padding, shuffle_list, slo0, rep, char_set, shift, rev):
         def repeated_key_xor(plain_text, key):
-            pt = plain_text
-            len_key = len(key)
-            encoded = []
-
-            for i in range(0, len(pt)):
-                encoded.append(pt[i] ^ key[i % len_key])
-            return bytes(encoded)
+            return CommonAlgs.repeated_key_xor(plain_text, key)
 
         def fnonce(b):
             b = b + nonce
@@ -107,6 +107,8 @@ class FeistelN:
             return repeated_key_xor(chaO, nonce)
 
         return fnonce
+
+
 
 
 class CHAFHMAC:
