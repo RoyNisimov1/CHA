@@ -340,6 +340,19 @@ Right now the available modes are:
     print(Piranha.unpad(cipher.decrypt(a)))
 ```
 
+# KRY and KRHASH
+I made this cipher using the KRHASH-Feistel network.
+
+I made this to learn about [modes of operation](https://www.youtube.com/watch?v=Rk0NIQfEXBA).
+
+Right now the available modes are:
+* ECB
+* CBC
+* CTR
+* EAA (My Encrypt and Authenticate, not EAX)
+
+Works similar to Piranha, just replace Piranha with KRY
+
 
 
 # *_Notes_*:
