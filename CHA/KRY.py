@@ -66,11 +66,11 @@ class KRY:
 
     def encrypt(self, data: bytes = None):
         if data is None: data = self.mode.data
-        return self.mode.encrypt(data, self.encryptionFunction)
+        return self.mode.encrypt(data, self.encryptionFunction, n=4)
 
     def decrypt(self, cipher: bytes):
         if cipher is None: cipher = self.mode.data
-        return self.mode.decrypt(cipher, self.decryptionFunction)
+        return self.mode.decrypt(cipher, self.decryptionFunction, n=4)
 
 class ModesEAA(Modes, prefix=KRY.EAA):
     def encrypt(self, data: bytes, func, *args, **kwargs):

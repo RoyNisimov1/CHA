@@ -67,6 +67,8 @@ class ModesCTR(Modes, prefix=Modes.CTR):
         if data is None: data = self.data
         data = self.pad(data)
         repUnit = 16
+        if 'n' in kwargs:
+            repUnit = kwargs['n']
         dataList = self.split_nth(self.BlockSize, data)
         times = len(dataList)
         if times < repUnit: repUnit = times
