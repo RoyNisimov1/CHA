@@ -64,13 +64,11 @@ class KRY:
         func = FeistelN.fKRHASH_with_nonce(key)
         return FeistelN().DE(data, 4, func, 'd', 's')
 
-    def encrypt(self, data: bytes = None, func=None):
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=1, rev=1)
+    def encrypt(self, data: bytes = None):
         if data is None: data = self.mode.data
         return self.mode.encrypt(data, self.encryptionFunction)
 
-    def decrypt(self, cipher: bytes, func=None):
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=1, rev=1)
+    def decrypt(self, cipher: bytes):
         if cipher is None: cipher = self.mode.data
         return self.mode.decrypt(cipher, self.decryptionFunction)
 

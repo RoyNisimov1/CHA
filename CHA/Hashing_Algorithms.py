@@ -277,9 +277,9 @@ class Krhash:
             return l
 
         for i in range(16):
-            m = m + b"\x01"
-            p = ((Krhash.repeated_key_xor(m, b"Padding key")[-1] | 21) & pow(2, 21, 256) + 1) % 256
-            m += bytes(p) * (64-(len(m) % 64))
+            m = m + b"\xff"
+            p = ((Krhash.repeated_key_xor(m, b"\x01")[-1] | 21) & pow(2, 21, 256) + 1) % 256
+            m += chr(p).encode() * (64-(len(m) % 64))
 
             out = shuffle(list(m))
             rev = out.copy()
@@ -291,9 +291,32 @@ class Krhash:
             second_xor = Krhash.repeated_key_xor(m, rev_m)
             m = Krhash.repeated_key_xor(first_xor, second_xor)[:64]
             m = shuffle1(list(m))
+            s1 = shuffle1(list(m)[:7])[:16]
+            s2 = shuffle1(list(m)[:16])[:8]
+            s1int = list(s1)
+            s2int = list(s2)
+            for i in range(len(s1)):
+                if i % ((s1int[i] % 10) + 1) == 0:
+                    s1int[i] = ((s1int[i] << 17) | 7) & 21
+                s1int[i] |= 2
+                s1int[i] %= 256
+            s1 = b"".join([chr(c).encode() for c in s1int])
+            s2 = b"".join([chr(c).encode() for c in s2int])
+            m = Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
         s1 = shuffle1(list(m)[:7])[:16]
         s2 = shuffle1(list(m)[:16])[:8]
-        return Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
+        s1int = list(s1)
+        s2int = list(s2)
+        for i in range(len(s1)):
+            if i % ((s1int[i] % 10) + 1) == 0:
+                s1int[i] = ((s1int[i] << 17) | 7) & 21
+            s1int[i] |= 2
+            s1int[i] %= 256
+        s1 = b"".join([chr(c).encode() for c in s1int])
+        s2 = b"".join([chr(c).encode() for c in s2int])
+        m = Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
+        out = Krhash.repeated_key_xor((s2 + m + s1 + m)[:64], m + Krhash.repeated_key_xor(s2, s1) + m[:4])[:64]
+        return out
 
 if __name__ == '__main__':
     while True:
