@@ -280,7 +280,7 @@ class Krhash:
             m = m + b"\x01"
             p = ((Krhash.repeated_key_xor(m, b"Padding key")[-1] | 21) & pow(2, 21, 256) + 1) % 256
             m += bytes(p) * (64-(len(m) % 64))
-            m = m[:64]
+
             out = shuffle(list(m))
             rev = out.copy()
             rev.reverse()
