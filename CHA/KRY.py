@@ -28,16 +28,15 @@ class KRY:
         self.mode.update(data)
 
     def HMAC(self, data: bytes = None, func=None) -> bytes:
-        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key)
+        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key + self.iv)
         if data is None: data = self.mode.data
         key = KRY.repeated_key_xor(self.key, self.mode.iv) if self.mode in KRY._uses_IV else self.key
-        hmac_obj = CHAFHMAC(key, func)
-        hmac_obj.update(data)
+        hmac_obj = CHAFHMAC(key, func, data)
         mac = hmac_obj.digest()
         return mac
 
     def verify(self, data: bytes = None, mac=b'', func=None):
-        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key)
+        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key + self.iv)
         if data is None: data = self.mode.data
         return self.HMAC(data=data, func=func) == mac
 

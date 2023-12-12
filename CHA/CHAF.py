@@ -137,23 +137,21 @@ class CHAFHMAC:
     def update(self, message):
         self.msg += message
 
-    def hexdigest(self, cha_hex_value=128):
+    def hexdigest(self):
         first = self.func(self.k1 + self.msg)
         second = self.func(self.k2 + first)
-        r = CHAObject(int(second.hex(), 16)).hexdigest(cha_hex_value)
-        return r
+        return second.hex()
 
-    def digest(self, cha_hex_value=128):
+    def digest(self):
         first = self.func(self.k1 + self.msg)
         second = self.func(self.k2 + first)
-        r = CHAObject(int(second.hex(), 16)).digest(cha_hex_value)
-        return r
+        return second
 
     def verify(self, mac):
-        digest = list(self.hexdigest())
+        digest = self.digest()
         r = True
         for i in range(len(digest)):
-            if digest[i] != list(mac)[i % len(mac)]: r = False
+            if digest[i] != mac[i % len(mac)]: r = False
         if len(digest) != len(mac): r = False
         return r
 

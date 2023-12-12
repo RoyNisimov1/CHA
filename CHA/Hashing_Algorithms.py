@@ -226,12 +226,16 @@ class HashMaker:
         return padding, shuffle_key
 class Krhash:
 
+
     @staticmethod
     def repeated_key_xor(plain_text, key):
         return CommonAlgs.repeated_key_xor(plain_text, key)
 
     @staticmethod
     def Krhash(m: bytes) -> bytes:
+        to_do = CommonAlgs.split_nth(64, m)
+        to_do = [to_do[i] + bytes(i) for i in range(len(to_do))]
+        to_xor = []
         def shuffle(l: list) -> list:
             l = l.copy()
             for i in range(len(l)):
@@ -273,49 +277,82 @@ class Krhash:
                     to_shuffle_list.append(i4)
                 return to_shuffle_list
             f = func(to_shuffle_list, 3)
-            l = b"".join([chr(c).encode() for c in f])
-            return l
-
-        for i in range(16):
-            m = m + b"\xff"
-            p = ((Krhash.repeated_key_xor(m, b"\x01")[-1] | 21) & pow(2, 21, 256) + 1) % 256
-            m += chr(p).encode() * (64-(len(m) % 64))
-
-            out = shuffle(list(m))
-            rev = out.copy()
-            rev.reverse()
-            first_xor = Krhash.repeated_key_xor(out, rev)
-            rev_m = list(m)
-            rev_m.reverse()
-            rev_m = shuffle(rev_m)
-            second_xor = Krhash.repeated_key_xor(m, rev_m)
-            m = Krhash.repeated_key_xor(first_xor, second_xor)[:64]
-            m = shuffle1(list(m))
-            s1 = shuffle1(list(m)[:7])[:16]
+            l = [i % 256 for i in f]
+            return bytes(l)
+        for m in to_do:
+            for i in range(1):
+                m = m + b"\x01"
+                p = Krhash.repeated_key_xor(m, b"\x00" + m)
+                for i in range(4):
+                    p = ((Krhash.repeated_key_xor(m, bytes(len(m)) + bytes(p))[-1] | 21) & pow(2, 21, 256) + 1) | 17 % 256
+                m += chr(p).encode() * (64-(len(m) % 64))
+                l = list(m)
+                for i in range(m[0] % len(l)):
+                    l.append(l.pop(0))
+                m = bytes(l)
+                out = shuffle(list(m))
+                rev = out.copy()
+                rev.reverse()
+                first_xor = Krhash.repeated_key_xor(out, rev)
+                rev_m = list(m)
+                rev_m.reverse()
+                rev_m = shuffle(rev_m)
+                second_xor = Krhash.repeated_key_xor(m, rev_m)
+                m = Krhash.repeated_key_xor(first_xor, second_xor)[:64]
+                m = shuffle1(list(m))
+                s1 = shuffle1(list(m)[:8])[:16]
+                s2 = shuffle1(list(m)[:16])[:8]
+                s1int = list(s1)
+                s2int = list(s2)
+                for i in range(len(s1)):
+                    if i % ((s1int[i] % 10) + 1) == 0:
+                        s1int[i] = ((s1int[i] << 17) | 7) & 21
+                    s1int[i] |= 2
+                    s1int[i] %= 256
+                s1 = b"".join([chr(c).encode() for c in s1int])
+                s2 = b"".join([chr(c).encode() for c in s2int])
+                m = Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
+                l = list(m)
+                for i in range(m[0] % len(l)):
+                    first = l.pop(0)
+                    if len(l) > 1:
+                        first = first ^ l[1]
+                    first = first ^ 5 | 23 & 3
+                    first %= 256
+                    l.append(first)
+                m = bytes(l)
+            s1 = shuffle1(list(m)[:21])[:16]
             s2 = shuffle1(list(m)[:16])[:8]
             s1int = list(s1)
             s2int = list(s2)
             for i in range(len(s1)):
                 if i % ((s1int[i] % 10) + 1) == 0:
                     s1int[i] = ((s1int[i] << 17) | 7) & 21
+                    s1int.append((s2int.pop(0) | 278) % 256)
+                    s2int.append((s1int.pop(0) & 6) % 256)
                 s1int[i] |= 2
                 s1int[i] %= 256
-            s1 = b"".join([chr(c).encode() for c in s1int])
-            s2 = b"".join([chr(c).encode() for c in s2int])
+                s1int.append((s2int.pop(0) | 5) % 256)
+                s2int.append((s1int.pop(0) & 2111) % 256)
+            s1 = bytes(s1int)
+            s2 = bytes(s2int)
+            l = list(s2 + m + s1)
+            for i in range(m[0] % len(l)):
+                first = l.pop(0)
+                if (i + s2[i % len(s2)]) % 3 == 0:
+                    first = first ^ l[i % len(l)]
+                first = first ^ s1[i % len(s1)] * 23 // 51
+                first %= 256
+                l.append(first)
+                l = list(shuffle1(l, i + 6))
+            m = shuffle1(l, 2)
             m = Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
-        s1 = shuffle1(list(m)[:7])[:16]
-        s2 = shuffle1(list(m)[:16])[:8]
-        s1int = list(s1)
-        s2int = list(s2)
-        for i in range(len(s1)):
-            if i % ((s1int[i] % 10) + 1) == 0:
-                s1int[i] = ((s1int[i] << 17) | 7) & 21
-            s1int[i] |= 2
-            s1int[i] %= 256
-        s1 = b"".join([chr(c).encode() for c in s1int])
-        s2 = b"".join([chr(c).encode() for c in s2int])
-        m = Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
-        out = Krhash.repeated_key_xor((s2 + m + s1 + m)[:64], m + Krhash.repeated_key_xor(s2, s1) + m[:4])[:64]
+            out = Krhash.repeated_key_xor((s2 + m + s1 + m)[:64], m + Krhash.repeated_key_xor(s2, s1) + s1)[:64]
+            to_xor.append(out)
+        out = to_xor[0]
+        for i in range(1, len(to_xor)):
+            out = Krhash.repeated_key_xor(out, to_xor[i])
+
         return out
 
 if __name__ == '__main__':

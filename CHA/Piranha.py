@@ -28,7 +28,7 @@ class Piranha:
         self.mode.update(data)
 
     def HMAC(self, data: bytes = None, func=None) -> bytes:
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=1, rev=1)
+        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key + self.iv)
         if data is None: data = self.mode.data
         key = Piranha.repeated_key_xor(self.key, self.mode.iv) if self.mode in Piranha._uses_IV else self.key
         hmac_obj = CHAFHMAC(key, func)
@@ -37,7 +37,7 @@ class Piranha:
         return mac
 
     def verify(self, data: bytes = None, mac=b'', func=None):
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=1, rev=1)
+        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key + self.iv)
         if data is None: data = self.mode.data
         return self.HMAC(data=data, func=func) == mac
 
