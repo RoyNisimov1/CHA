@@ -234,7 +234,22 @@ class Krhash:
     @staticmethod
     def Krhash(m: bytes) -> bytes:
         to_do = CommonAlgs.split_nth(64, m)
-        to_do = [to_do[i] + bytes(i) for i in range(len(to_do))]
+        to_do = [to_do[i] + bytes((i % 256)) for i in range(len(to_do))]
+        new_to_do = []
+        for i in range(len(to_do)):
+            to_append = to_do[i]
+            if i % 2:
+                l = list(to_append)
+                l.reverse()
+                to_append = bytes(l)
+            if i % 3:
+                l = list(to_append)
+                for j in range(l[0] % len(l)):
+                    l.append(l.pop(0))
+                to_append = bytes(l)
+
+            new_to_do.append(to_append)
+        to_do = new_to_do
         to_xor = []
         def shuffle(l: list) -> list:
             l = l.copy()
