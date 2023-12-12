@@ -296,11 +296,11 @@ class Krhash:
             return bytes(l)
         for m in to_do:
             for i in range(1):
-                m = m + b"\x01"
-                p = Krhash.repeated_key_xor(m, b"\x00" + m)
+                m = m + b"\xff"
+                p = Krhash.repeated_key_xor(m, b"\xee\xff" + m)
                 for i in range(4):
-                    p = ((Krhash.repeated_key_xor(m, bytes(len(m)) + bytes(p))[-1] | 21) & pow(2, 21, 256) + 1) | 17 % 256
-                m += chr(p).encode() * (64-(len(m) % 64))
+                    p = Krhash.repeated_key_xor(m, bytes(len(m)) + bytes(p))
+                m += bytes(p)
                 l = list(m)
                 for i in range(m[0] % len(l)):
                     l.append(l.pop(0))
@@ -336,6 +336,7 @@ class Krhash:
                     first %= 256
                     l.append(first)
                 m = bytes(l)
+
             s1 = shuffle1(list(m)[:21])[:16]
             s2 = shuffle1(list(m)[:16])[:8]
             s1int = list(s1)
