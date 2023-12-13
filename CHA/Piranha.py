@@ -8,7 +8,7 @@ class Piranha:
     ECB = Modes.ECB
     CBC = Modes.CBC
     CTR = Modes.CTR
-    EAA = 3
+    EAA = Modes.EAA
     BlockSize = 64
     _uses_IV = [CTR, CBC]
 
@@ -27,19 +27,7 @@ class Piranha:
     def update(self, data: bytes):
         self.mode.update(data)
 
-    def HMAC(self, data: bytes = None, func=None) -> bytes:
-        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key + self.iv)
-        if data is None: data = self.mode.data
-        key = Piranha.repeated_key_xor(self.key, self.mode.iv) if self.mode in Piranha._uses_IV else self.key
-        hmac_obj = CHAFHMAC(key, func)
-        hmac_obj.update(data)
-        mac = hmac_obj.digest()
-        return mac
 
-    def verify(self, data: bytes = None, mac=b'', func=None):
-        if func is None: func = FeistelN.fKRHASH_with_nonce(self.key + self.iv)
-        if data is None: data = self.mode.data
-        return self.HMAC(data=data, func=func) == mac
 
 
     @staticmethod
@@ -74,19 +62,10 @@ class Piranha:
         if cipher is None: cipher = self.mode.data
         return self.mode.decrypt(cipher, self.decryptionFunction)
 
-class ModesEAA(Modes, prefix=Piranha.EAA):
-    def encrypt(self, data: bytes, func, *args, **kwargs):
-        cipher = Piranha(self.key, Piranha.CTR, data=data, iv=self.iv)
-        d = cipher.encrypt()
-        hmac = cipher.HMAC()
-        return hmac + cipher.iv + d
+    def HMAC(self, data: bytes) -> bytes:
+        return self.mode.HMAC(data)
 
-    def decrypt(self, cipher: bytes, func, *args, **kwargs):
-        hmac = cipher[:64]
-        iv = cipher[64:80]
-        data = cipher[80:]
-        cipher = Piranha(self.key, Piranha.CTR, data=data, iv=iv)
-        pt = cipher.decrypt(data)
-        v = cipher.verify(pt, hmac)
-        if not v: raise ValueError("HMACs don't match!")
-        return pt
+    def verify(self, data: bytes, mac: bytes) -> bytes:
+        return self.mode.verify(data, mac)
+
+

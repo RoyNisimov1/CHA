@@ -1,3 +1,4 @@
+import hmac
 import sys
 import secrets
 from .CommonAlgs import CommonAlgs
@@ -6,6 +7,7 @@ class Modes:
     ECB = 0
     CBC = 1
     CTR = 2
+    EAA = 3
     _uses_IV = [CTR, CBC]
     BlockSize = 64
 
@@ -39,7 +41,11 @@ class Modes:
     def repeated_key_xor(plain_text, key):
         return CommonAlgs.repeated_key_xor(plain_text, key)
 
+    def HMAC(self, data: bytes) -> bytes:
+        return hmac.new(self.key + self.iv, data, digestmod="sha512").digest()
 
+    def verify(self, data: bytes, mac: bytes) -> bytes:
+        return hmac.compare_digest(hmac.new(self.key + self.iv, data, digestmod="sha512").digest(), mac)
 
     @staticmethod
     def split_nth(n: int, line: str or bytes):
@@ -125,3 +131,23 @@ class ModesECB(Modes, prefix=Modes.ECB):
         for e in message:
             ra1.append(func(e, self.key, *args, **kwargs))
         return b''.join(ra1)
+
+
+class ModesEAA(Modes, prefix=Modes.EAA):
+
+    def encrypt(self, data: bytes, func, *args, **kwargs):
+        cipher = Modes(self.key, Modes.CTR, data=data, iv=self.iv)
+        d = cipher.encrypt(data, func)
+        hmac = cipher.HMAC(data)
+        self.iv = secrets.token_bytes(16)
+        return hmac + cipher.iv + d
+
+    def decrypt(self, cipher: bytes, func, *args, **kwargs):
+        hmac = cipher[:64]
+        iv = cipher[64:80]
+        data = cipher[80:]
+        cipher = Modes(self.key, Modes.CTR, data=data, iv=iv)
+        pt = cipher.decrypt(data, func)
+        v = cipher.verify(pt, hmac)
+        if not v: raise ValueError("HMACs don't match!")
+        return pt
