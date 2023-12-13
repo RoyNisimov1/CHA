@@ -86,5 +86,5 @@ class ModesEAA(Modes, prefix=KRY.EAA):
         pt = cipher.decrypt(data)
         v = cipher.verify(pt, hmac)
         if not v: raise ValueError("HMACs don't match!")
-        return pt
+        return KRY.unpad(pt)
 
