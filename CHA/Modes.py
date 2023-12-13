@@ -73,9 +73,8 @@ class ModesCTR(Modes, prefix=Modes.CTR):
         times = len(dataList)
         if times < repUnit: repUnit = times
         encryptedIVs = []
-        for i in range(repUnit):
-            bytesI = i.to_bytes(i.bit_length(), sys.byteorder)
-            nonce = self.iv + bytesI
+        for i in range(1, repUnit+1):
+            nonce = self.iv + bytes([i])
             iv = func(nonce, self.key, *args, **kwargs)
             encryptedIVs.append(iv)
         out = [self.repeated_key_xor(self.repeated_key_xor(encryptedIVs[i % len(encryptedIVs)], c), self.key)
