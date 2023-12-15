@@ -233,6 +233,7 @@ class Krhash:
 
     @staticmethod
     def Krhash(m: bytes) -> bytes:
+        lm = len(m) % 256
         to_do = CommonAlgs.split_nth(64, m)
         to_do = [to_do[i] + bytes((i % 256)) for i in range(len(to_do))]
         new_to_do = []
@@ -266,7 +267,7 @@ class Krhash:
             a1.reverse()
             a2.reverse()
             a1.extend(a2)
-            out = [a ^ b for a in a1 for b in a1]
+            out = [a ^ b for a in a1 for b in a2]
             for i in range(len(l)):
                 if i % ((out[i] % 10) + 1) == 0:
                     out[i] = ((out[i] << 17) | 7) & 21
@@ -365,12 +366,25 @@ class Krhash:
         m = Krhash.repeated_key_xor((s2 + s1 + m)[:64], s1 + s2 + m[:4])[:64]
         out = Krhash.repeated_key_xor((s2 + m + s1 + m)[:64], m + Krhash.repeated_key_xor(s2, s1) + s1)[:64]
         to_xor.append(out)
+        for i in range(len(to_do)):
+            to_append = to_do[i]
+            if i % 2 == 0:
+                l = list(to_append)
+                l.reverse()
+                to_append = bytes(l)
+            if i % 3 == 0:
+                l = list(to_append)
+                for j in range(l[0] % len(l)):
+                    l.append(l.pop(0))
+                to_append = bytes(l)
+
+            new_to_do.append(to_append)
         to_xor.extend(new_to_do)
         out = to_xor[0]
         for i in range(1, len(to_xor)):
             out = Krhash.repeated_key_xor(out, to_xor[i])
-
-        return out
+        out = Krhash.repeated_key_xor(out, [lm])
+        return out[:64]
 
 if __name__ == '__main__':
     while True:

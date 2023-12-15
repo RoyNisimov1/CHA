@@ -12,12 +12,10 @@ class Piranha:
     BlockSize = 64
     _uses_IV = [CTR, CBC]
 
-    @staticmethod
-    def repeated_key_xor(plain_text, key):
-        return CommonAlgs.repeated_key_xor(plain_text, key)
+
 
     def __init__(self, key, mode: int, *args, **kwargs):
-        self.mode = Modes(key, mode, *args, **kwargs)
+        self.mode = Modes.new(key, mode, *args, **kwargs)
         self.key = key
         self.m = mode
         self.iv = self.mode.iv
@@ -30,35 +28,30 @@ class Piranha:
 
 
 
-    @staticmethod
-    def split_nth(n: int, line: str):
-        return [line[i:i + n] for i in range(0, len(line), n)]
 
     @staticmethod
-    def pad(data: bytes, blockSize=None):
+    def pad(data: bytes, blockSize=None) -> bytes:
         if blockSize is None: blockSize = Piranha.BlockSize
         return PKCS7(blockSize).pad(data)
 
     @staticmethod
-    def unpad(data: bytes, blockSize=None):
+    def unpad(data: bytes, blockSize=None) -> bytes:
         if blockSize is None: blockSize = Piranha.BlockSize
         return PKCS7(blockSize).unpad(data)
 
-    def encryptionFunction(self, data: bytes, key, *args, **kwargs):
+    def encryptionFunction(self, data: bytes, key, *args, **kwargs) -> bytes:
         func = FeistelN.fRAB_with_nonce(key, rep=1, rev=1)
         return FeistelN().DE(data, 4, func, 'e', 's')
 
-    def decryptionFunction(self, data: bytes, key, *args, **kwargs):
+    def decryptionFunction(self, data: bytes, key, *args, **kwargs) -> bytes:
         func = FeistelN.fRAB_with_nonce(key, rep=1, rev=1)
         return FeistelN().DE(data, 4, func, 'd', 's')
 
-    def encrypt(self, data: bytes = None, func=None):
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=1, rev=1)
+    def encrypt(self, data: bytes = None) -> bytes:
         if data is None: data = self.mode.data
         return self.mode.encrypt(data, self.encryptionFunction)
 
-    def decrypt(self, cipher: bytes, func=None):
-        if func is None: func = FeistelN.fRAB_with_nonce(self.key, rep=1, rev=1)
+    def decrypt(self, cipher: bytes) -> bytes:
         if cipher is None: cipher = self.mode.data
         return self.mode.decrypt(cipher, self.decryptionFunction)
 

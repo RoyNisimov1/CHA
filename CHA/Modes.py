@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import hmac
-import sys
 import secrets
 from .CommonAlgs import CommonAlgs
 from .Padding import PKCS7
@@ -12,6 +13,11 @@ class Modes:
     BlockSize = 64
 
     _registry = {}
+
+
+    @staticmethod
+    def new(key: bytes = None, prefix:int=0, *args, **kwargs) -> Modes:
+        return Modes(key, prefix, *args, **kwargs)
 
     def __init_subclass__(cls, prefix, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -38,7 +44,7 @@ class Modes:
 
 
     @staticmethod
-    def repeated_key_xor(plain_text, key):
+    def repeated_key_xor(plain_text, key) -> bytes:
         return CommonAlgs.repeated_key_xor(plain_text, key)
 
     def HMAC(self, data: bytes) -> bytes:
@@ -48,28 +54,28 @@ class Modes:
         return hmac.compare_digest(hmac.new(self.key + self.iv, data, digestmod="sha512").digest(), mac)
 
     @staticmethod
-    def split_nth(n: int, line: str or bytes):
+    def split_nth(n: int, line: str or bytes) -> str or bytes:
         return [line[i:i + n] for i in range(0, len(line), n)]
 
 
-    def pad(self, data: bytes):
+    def pad(self, data: bytes) -> bytes:
         return PKCS7(self.BlockSize).pad(data)
 
     @staticmethod
-    def unpad(self, data: bytes):
+    def unpad(self, data: bytes) -> bytes:
         return PKCS7(self.BlockSize).unpad(data)
 
-    def encrypt(self, data: bytes, func, *args, **kwargs):
+    def encrypt(self, data: bytes, func, *args, **kwargs) -> bytes:
         raise NotImplementedError
 
-    def update(self, data: bytes):
+    def update(self, data: bytes)  -> None:
         self.data = data
 
-    def decrypt(self, cipher: bytes, func, *args, **kwargs):
+    def decrypt(self, cipher: bytes, func, *args, **kwargs) -> bytes:
         raise NotImplementedError
 
 class ModesCTR(Modes, prefix=Modes.CTR):
-    def encrypt(self, data: bytes, func, *args, **kwargs):
+    def encrypt(self, data: bytes, func, *args, **kwargs) -> bytes:
         if data is None: data = self.data
         data = self.pad(data)
         repUnit = 16
@@ -87,11 +93,11 @@ class ModesCTR(Modes, prefix=Modes.CTR):
                for i, c in enumerate(dataList)]
         return b''.join(out)
 
-    def decrypt(self, cipher: bytes, func, *args, **kwargs):
+    def decrypt(self, cipher: bytes, func, *args, **kwargs) -> bytes:
         return self.encrypt(cipher, func, *args, **kwargs)
 
 class ModesCBC(Modes, prefix=Modes.CBC):
-    def encrypt(self, data: bytes, func, *args, **kwargs):
+    def encrypt(self, data: bytes, func, *args, **kwargs) -> bytes:
         if data is None: data = self.data
         dataList = self.split_nth(self.BlockSize, data)
         times = len(dataList)
@@ -104,7 +110,7 @@ class ModesCBC(Modes, prefix=Modes.CBC):
             nextXOR = encryptedData
         return self.repeated_key_xor(b''.join(encrypted), self.key)
 
-    def decrypt(self, cipher: bytes, func, *args, **kwargs):
+    def decrypt(self, cipher: bytes, func, *args, **kwargs) -> bytes:
         cipher = self.repeated_key_xor(cipher, self.key)
         dataList = Modes.split_nth(self.BlockSize, cipher)
         times = len(dataList)
@@ -118,14 +124,14 @@ class ModesCBC(Modes, prefix=Modes.CBC):
         return b''.join(decrypted)
 
 class ModesECB(Modes, prefix=Modes.ECB):
-    def encrypt(self, data: bytes, func, *args, **kwargs):
+    def encrypt(self, data: bytes, func, *args, **kwargs) -> bytes:
         ra = []
         ml = Modes.split_nth(self.BlockSize, data)
         for i in ml:
             ra.append(func(i, self.key, *args, **kwargs))
         return b"".join(ra)
 
-    def decrypt(self, cipher: bytes, func, *args, **kwargs):
+    def decrypt(self, cipher: bytes, func, *args, **kwargs) -> bytes:
         ra1 = []
         message = Modes.split_nth(self.BlockSize, cipher)
         for e in message:
@@ -135,14 +141,14 @@ class ModesECB(Modes, prefix=Modes.ECB):
 
 class ModesEAA(Modes, prefix=Modes.EAA):
 
-    def encrypt(self, data: bytes, func, *args, **kwargs):
+    def encrypt(self, data: bytes, func, *args, **kwargs) -> bytes:
         cipher = Modes(self.key, Modes.CTR, data=data, iv=self.iv)
         d = cipher.encrypt(data, func)
         hmac = cipher.HMAC(data)
         self.iv = secrets.token_bytes(16)
         return hmac + cipher.iv + d
 
-    def decrypt(self, cipher: bytes, func, *args, **kwargs):
+    def decrypt(self, cipher: bytes, func, *args, **kwargs) -> bytes:
         hmac = cipher[:64]
         iv = cipher[64:80]
         data = cipher[80:]

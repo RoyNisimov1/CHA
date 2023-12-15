@@ -12,53 +12,42 @@ class KRY:
     BlockSize = 64
     _uses_IV = [CTR, CBC]
 
-    @staticmethod
-    def repeated_key_xor(plain_text, key):
-        return CommonAlgs.repeated_key_xor(plain_text, key)
 
     def __init__(self, key, mode: int, *args, **kwargs):
-        self.mode = Modes(key, mode, *args, **kwargs)
+        self.mode = Modes.new(key, mode, *args, **kwargs)
         self.key = key
         self.m = mode
         self.iv = self.mode.iv
         self.args = args
         self.kwargs = kwargs
 
-    def update(self, data: bytes):
+    def update(self, data: bytes) -> bytes:
         self.mode.update(data)
 
 
-
+    @staticmethod
+    def pad(data: bytes) -> bytes:
+        return PKCS7(KRY.BlockSize).pad(data)
 
     @staticmethod
-    def split_nth(n: int, line: str):
-        return [line[i:i + n] for i in range(0, len(line), n)]
+    def unpad(data: bytes) -> bytes:
+        return PKCS7(KRY.BlockSize).unpad(data)
 
-    @staticmethod
-    def pad(data: bytes, blockSize=None):
-        if blockSize is None: blockSize = KRY.BlockSize
-        return PKCS7(blockSize).pad(data)
-
-    @staticmethod
-    def unpad(data: bytes, blockSize=None):
-        if blockSize is None: blockSize = KRY.BlockSize
-        return PKCS7(blockSize).unpad(data)
-
-    def encryptionFunction(self, data: bytes, key, *args, **kwargs):
+    def encryptionFunction(self, data: bytes, key, *args, **kwargs) -> bytes:
         func = FeistelN.fKRHASH_with_nonce(key)
         return FeistelN().DE(data, 4, func, 'e', 's')
 
-    def decryptionFunction(self, data: bytes, key, *args, **kwargs):
+    def decryptionFunction(self, data: bytes, key, *args, **kwargs) -> bytes:
         func = FeistelN.fKRHASH_with_nonce(key)
         return FeistelN().DE(data, 4, func, 'd', 's')
 
-    def encrypt(self, data: bytes = None):
+    def encrypt(self, data: bytes = None) -> bytes:
         if data is None: data = self.mode.data
-        return self.mode.encrypt(data, self.encryptionFunction, n=4)
+        return self.mode.encrypt(data, self.encryptionFunction, n=16)
 
-    def decrypt(self, cipher: bytes):
+    def decrypt(self, cipher: bytes) -> bytes:
         if cipher is None: cipher = self.mode.data
-        return self.mode.decrypt(cipher, self.decryptionFunction, n=4)
+        return self.mode.decrypt(cipher, self.decryptionFunction, n=16)
 
     def HMAC(self, data: bytes) -> bytes:
         return self.mode.HMAC(data)
