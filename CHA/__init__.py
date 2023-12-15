@@ -1,4 +1,4 @@
-__all__ = ['FeistelN', "KRY", 'CHAObject', 'HashMaker', 'CHAF', 'Hashing_Algorithms', 'BlackFrog', 'BlackFrogKey', "OAEP", "Padding", "PEMFile", "PEM", "Piranha", "Krhash","PKCS7", "Modes", "CHAFHMAC", "CommonAlgs"]
+__all__ = ["CowCowModes", "CowCow", 'FeistelN', "KRY", 'CHAObject', 'HashMaker', 'CHAF', 'Hashing_Algorithms', 'BlackFrog', 'BlackFrogKey', "OAEP", "Padding", "PEMFile", "PEM", "Piranha", "Krhash","PKCS7", "Modes", "CHAFHMAC", "CommonAlgs"]
 from .CHAF import FeistelN, CHAFHMAC
 from .Hashing_Algorithms import CHAObject, HashMaker, Krhash
 from .BlackFrog import BlackFrogKey, BlackFrog
@@ -9,3 +9,5 @@ from .Modes import Modes
 from .CommonAlgs import CommonAlgs
 from .Padding import PKCS7
 from .KRY import KRY
+from .CowCow import CowCow
+from .CowCowModes import CowCowModes

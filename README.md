@@ -353,6 +353,31 @@ Right now the available modes are:
 
 Works similar to Piranha, just replace Piranha with KRY
 
+# CowCowModes
+I made this cipher using the CowCow-sp network.
+
+I made this to learn about [modes of operation](https://www.youtube.com/watch?v=Rk0NIQfEXBA).
+
+Right now the available modes are:
+* ECB
+* CTR
+* EAA (My Encrypt and Authenticate, not EAX)
+
+Works similar to Piranha, just replace Piranha with CowCowModes
+
+
+
+# Modes (Build you own)
+
+Right now the available modes are:
+* ECB
+* CBC
+* CTR
+* EAA (My Encrypt and Authenticate, not EAX)
+
+## Warning: do not init directly, use Modes.new()
+
+
 
 
 # *_Notes_*:
