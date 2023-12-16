@@ -57,7 +57,7 @@ class CowCow:
             out[i] = data[index]
         return bytes(out)
 
-    def R(self, data: bytes) -> bytes:
+    def R(self, data: bytes, i: int = 1) -> bytes:
         data = self.per(data)
         data = list(data)
         for j, b in enumerate(data):
@@ -65,9 +65,14 @@ class CowCow:
         data = self.per(data)
         half1 = data[:len(data)//2]
         half2 = data[len(data)//2:]
-        return half2 + half1
+        n = half2 + half1
+        if i % 3 == 0:
+            n = self.per(n)
+        return n
 
-    def InvR(self, data: bytes) -> bytes:
+    def InvR(self, data: bytes, i: int = 1) -> bytes:
+        if i % 3 == 0:
+            data = self.unper(data)
         half1 = data[len(data) // 2:]
         half2 = data[:len(data) // 2]
         data = half1 + half2
@@ -96,7 +101,7 @@ class CowCow:
             cipher = list(plaintext)
             key = self.key
             for i in range(64):
-                cipher = self.R(cipher)
+                cipher = self.R(cipher, i)
                 cipher = list(CowCow.repeated_key_xor(cipher, keys[i % len(keys)]))
                 cipher = list(CowCow.repeated_key_xor(cipher, key))
                 if i % 3 == 0:
@@ -129,7 +134,7 @@ class CowCow:
                     key = key[::-1]
                 plaintext = list(CowCow.repeated_key_xor(plaintext, key))
                 plaintext = list(CowCow.repeated_key_xor(plaintext, keys[i % len(keys)]))
-                plaintext = list(self.InvR(plaintext))
+                plaintext = list(self.InvR(plaintext, i))
             return bytes(plaintext)
 
         pts = CommonAlgs.split_nth(self.BlockSize, cipher)

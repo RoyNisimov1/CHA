@@ -2,6 +2,7 @@ from .CHAF import *
 from .Modes import *
 from .Padding import PKCS7
 from .CowCow import CowCow
+from .OAEP import OAEP
 class CowCowModes:
     ECB = Modes.ECB
     # CBC = Modes.CBC
@@ -30,12 +31,14 @@ class CowCowModes:
     @staticmethod
     def pad(data: bytes, blockSize=None) -> bytes:
         if blockSize is None: blockSize = CowCow.BlockSize
+        data = OAEP.oaep_pad(data)
         return PKCS7(blockSize).pad(data)
 
     @staticmethod
     def unpad(data: bytes, blockSize=None) -> bytes:
         if blockSize is None: blockSize = CowCow.BlockSize
-        return PKCS7(blockSize).unpad(data)
+        data = PKCS7(blockSize).unpad(data)
+        return OAEP.oaep_unpad(data).rstrip(b"\x00")
 
     def encryptionFunction(self, data: bytes, key, *args, **kwargs) -> bytes:
         cipher = CowCow(key)
