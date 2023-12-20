@@ -62,7 +62,7 @@ class BlackFrogKey:
         self.D = D
 
     def __eq__(self, other):
-        if not isinstance(self, other): return False
+        if not isinstance(other, BlackFrogKey): return False
         a = self.n == other.n
         b = self.E == other.E
         c = self.D == other.D
@@ -79,6 +79,7 @@ class BlackFrogKey:
         else:
             p = PEM.export_PEM(d.encode(), passcode, b"BLACKFROG PUBLIC KEY", n=n)
         return p
+
 
 
     @staticmethod
