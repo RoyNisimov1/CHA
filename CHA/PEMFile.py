@@ -44,7 +44,6 @@ class PEM:
     def import_PEM(b: bytes, passcode: bytes):
         v = PEM.validate(b)
         if not v: raise ValueError("Invalid data!")
-
         l = b.split(b"\n")
         l.pop(0)
         l.pop(-1)

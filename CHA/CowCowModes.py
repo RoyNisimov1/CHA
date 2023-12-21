@@ -31,18 +31,15 @@ class CowCowModes:
 
     @staticmethod
     def pad(data: bytes, blockSize=None) -> bytes:
-        if blockSize is None: blockSize = CowCow.BlockSize
-        data = data + token_bytes(32)
-        return PKCS7(blockSize).pad(data)
+        return CowCow.pad(data, blockSize)
 
     @staticmethod
     def unpad(data: bytes, blockSize=None) -> bytes:
-        if blockSize is None: blockSize = CowCow.BlockSize
-        data = PKCS7(blockSize).unpad(data)
-        return data[:-32]
+        return CowCow.unpad(data, blockSize)
 
     def encryptionFunction(self, data: bytes, key, *args, **kwargs) -> bytes:
         cipher = CowCow(key)
+        data = self.pad(data)
         return cipher.encrypt(data)
 
     def decryptionFunction(self, data: bytes, key, *args, **kwargs) -> bytes:
