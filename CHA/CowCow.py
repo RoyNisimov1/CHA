@@ -30,7 +30,7 @@ class CowCow:
     def _make_keys(key) -> list:
         l = []
         current = key
-        for i in range(64):
+        for i in range(16):
             current = Krhash.Krhash(current)[:32]
             l.append(current)
         return l
@@ -134,7 +134,7 @@ class CowCow:
             s = sum(cipher)
             cipher = self._shift_right(cipher, s % 256)
             key = self.key
-            for i in range(64):
+            for i in range(16):
                 cipher = self.R(cipher, i)
                 cipher = list(CowCow.repeated_key_xor(cipher, keys[i % len(keys)]))
                 if i % 3 == 0:
@@ -165,7 +165,7 @@ class CowCow:
             cipher = cipher[::-1]
             plaintext = list(cipher)
 
-            for i in range(64):
+            for i in range(16):
                 if i % 3 == 0:
                     plaintext = plaintext[::-1]
                 if i % 7 == 0:
